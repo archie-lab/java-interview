@@ -58,7 +58,7 @@ JDBC is an abstraction layer that allows users to choose between databases. http
 
 There are four types of JDBC drivers. Any java program that works with database has two parts, first part is the JDBC API and second part is the driver that does the actual work.
 
-image::../images/JDBC-Drivers.png[JDBC-Drivers]
+image::../images/JDBC-Drivers.png[]
 
 1.  **JDBC-ODBC Bridge plus ODBC Driver (Type 1)**: It uses ODBC driver to connect to database. We should have ODBC drivers installed to connect to database, that’s why this driver is almost obsolete.
 2.  **Native API partly Java technology-enabled driver (Type 2)**: This driver converts JDBC class to the client API for the database servers. We should have database client API installed. Because of extra dependency on database client API drivers, this is also not preferred driver.
