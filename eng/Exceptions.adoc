@@ -60,7 +60,9 @@ If a catch block handles multiple exception, you can separate them using a pipe 
 Read more at http://www.journaldev.com/629/catching-multiple-exceptions-in-single-catch-and-rethrowing-exceptions-with-improved-type-checking-java-7-feature[Java multi catch block].
 
 
+=== Can try statements be nested?  
 
+Yes  
 
 
 

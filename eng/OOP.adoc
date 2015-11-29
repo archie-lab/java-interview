@@ -16,6 +16,7 @@ Encapsulation provides objects with the ability to hide their internal character
 *   It increases usability and maintenance of code, because the behavior of an object can be independently changed or extended.
 *   It improves modularity by preventing objects to interact with each other, in an undesired way.
 
+Encapsulation is a process of binding or wrapping the data and the codes that operates on the data into a single entity. This keeps the data safe from outside interface and misuse. Objects allow procedures to be encapsulated with their data to reduce potential interference. One way to think about encapsulation is as a protective wrapper that prevents code and data from being arbitrarily accessed by other code defined outside the wrapper.
 
 === What is the primary benefit of Encapsulation?  
 
@@ -33,6 +34,8 @@ Polymorphism is the ability of an object to take on many forms. The most common 
 Inheritance provides an object with the ability to acquire the fields and methods of another class, called base class. Inheritance provides re-usability of code and can be used to add additional features to an existing class, without modifying it.
 
 It is the process where one object acquires the properties of another. With the use of inheritance the information is made manageable in a hierarchical order.
+
+Inheritance is the process by which one object acquires the properties of another object. Inheritance allows well-tested procedures to be reused and enables changes to make once and have effect in all relevant places
 
 
 === Abstraction
@@ -65,6 +68,28 @@ Binding refers to the linking of a procedure call to the code to be executed in 
 === Define composition?  
 
 Holding the reference of the other class within some other class is known as composition.  
+
+Composition is the design technique to implement has-a relationship in classes. We can use Object composition for code reuse.
+
+Java composition is achieved by using instance variables that refers to other objects. Benefit of using composition is that we can control the visibility of other object to client classes and reuse only what we need. Read more with example at http://www.journaldev.com/1325/what-is-composition-in-java-java-composition-example[Java Composition] example.
+
+
+=== What is the benefit of Composition over Inheritance?
+
+One of the best practices of java programming is to “favor composition over inheritance”. Some of the possible reasons are:
+
+*   Any change in the superclass might affect subclass even though we might not be using the superclass methods. For example, if we have a method test() in subclass and suddenly somebody introduces a method test() in superclass, we will get compilation errors in subclass. Composition will never face this issue because we are using only what methods we need.
+*   Inheritance exposes all the super class methods and variables to client and if we have no control in designing superclass, it can lead to security holes. Composition allows us to provide restricted access to the methods and hence more secure.
+*   We can get runtime binding in composition where inheritance binds the classes at compile time. So composition provides flexibility in invocation of methods.
+You can read more about above benefits of composition over inheritance at http://www.journaldev.com/1775/multiple-inheritance-in-java-and-composition-vs-inheritance[java composition vs inheritance].
+
+
+
+
+
+
+
+
 
 
 

@@ -112,6 +112,10 @@ If we need to sort an array of Objects, we can use ``Arrays.sort()``. If we need
 
 Collections internally uses Arrays sorting method, so both of them have same performance except that Collections take sometime to convert list to array.
 
+We need to implement Comparable interface to support sorting of custom objects in a collection. Comparable interface has compareTo(T obj) method which is used by sorting methods and by providing this method implementation, we can provide default way to sort custom objects collection.
+
+However, if you want to sort based on different criteria, such as sorting an Employees collection based on salary or age, then we can create Comparator instances and pass it as sorting methodology. For more details read http://www.journaldev.com/780/java-comparable-and-comparator-example-to-sort-objects[Java Comparable and Comparator].
+
 
 === Why Collection doesn’t extend Cloneable and Serializable interfaces?
 
