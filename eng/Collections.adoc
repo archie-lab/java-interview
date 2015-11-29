@@ -8,7 +8,7 @@ toc::[]
 == Collections
 
 
-image::../images/collections.png[collections]
+image::../images/collections.png[]
 
 
 
@@ -553,7 +553,7 @@ When we call ``put`` method by passing key-value pair, HashMap uses Key hashCode
 
 When we call ``get`` method by passing Key, again it uses the hashCode() to find the index in the array and then use equals() method to find the correct Entry and return it’s value. Below image will explain these detail clearly.
 
-image::../images/java-hashmap-entry-impl.png[1]
+image::../images/java-hashmap-entry-impl.png[]
 
 The other important things to know about HashMap are capacity, load factor, threshold resizing. HashMap initial default capacity is **16** and load factor is 0.75. Threshold is capacity multiplied by load factor and whenever we try to add an entry, if map size is greater than threshold, HashMap rehashes the contents of map into a new array with a larger capacity. The capacity is always power of 2, so if you know that you need to store a large number of key-value pairs, for example in caching data from database, it’s good idea to initialize the HashMap with correct capacity and load factor.
 
