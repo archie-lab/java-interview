@@ -1,0 +1,80 @@
+= Java Core
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+
+=== Encapsulation
+
+It is the technique of making the fields in a class private and providing access to the fields via public methods. If a field is declared private, it cannot be accessed by anyone outside the class, thereby hiding the fields within the class. Therefore encapsulation is also referred to as data hiding.
+
+Encapsulation provides objects with the ability to hide their internal characteristics and behavior.Each object provides a number of methods, which can be accessed by other objects and change its internal data.In Java, there are three access modifiers: public, private and protected.Each modifier imposes different access rights to other classes, either in the same or in external packages. Some of the advantages of using encapsulation are listed below:
+
+*   The internal state of every objected is protected by hiding its attributes.
+*   It increases usability and maintenance of code, because the behavior of an object can be independently changed or extended.
+*   It improves modularity by preventing objects to interact with each other, in an undesired way.
+
+
+=== What is the primary benefit of Encapsulation?  
+
+The main benefit of encapsulation is the ability to modify our implemented code without breaking the code of others who use our code. With this Encapsulation gives maintainability, flexibility and extensibility to our code.
+
+=== Polymorphism
+
+Polymorphism is the ability of programming languages to present the same interface for differing underlying data types.A polymorphic type is a type whose operations can also be applied to values of some other type.
+
+Polymorphism is the ability of an object to take on many forms. The most common use of polymorphism in OOP occurs when a parent class reference is used to refer to a child class object.
+
+
+=== Inheritance
+
+Inheritance provides an object with the ability to acquire the fields and methods of another class, called base class. Inheritance provides re-usability of code and can be used to add additional features to an existing class, without modifying it.
+
+It is the process where one object acquires the properties of another. With the use of inheritance the information is made manageable in a hierarchical order.
+
+
+=== Abstraction
+
+It refers to the ability to make a class abstract in OOP. It helps to reduce the complexity and also improves the maintainability of the system.
+
+Abstraction is the process of separating ideas from specific instances and thus, develop classes in terms of their own functionality, instead of their implementation details. Java supports the creation and existence of abstract classes that expose interfaces, without including the actual implementation of all methods. The abstraction technique aims to separate the implementation details of a class from its behavior.
+
+
+=== Differences between Abstraction and Encapsulation
+Abstraction and encapsulation are complementary concepts. On the one hand, abstraction focuses on the behavior of an object. On the other hand, encapsulation focuses on the implementation of an object’s behavior. Encapsulation is usually achieved by hiding information about the internal state of an object and thus, can be seen as a strategy used in order to provide abstraction.
+
+
+
+
+=== What is the difference between object oriented programming language and object based programming language?  
+
+Object based programming languages follow all the features of OOPs except Inheritance. JavaScript is an example of object based programming languages. 
+
+=== What is runtime polymorphism or dynamic method dispatch?  
+
+Runtime polymorphism or dynamic method dispatch is a process in which a call to an overridden method is resolved at runtime rather than at compile-time. In this process, an overridden method is called through the reference variable of a superclass. 
+
+
+=== What is Dynamic Binding(late binding)?  
+
+Binding refers to the linking of a procedure call to the code to be executed in response to the call. Dynamic binding means that the code associated with a given procedure call is not known until the time of the call at run-time. 
+
+
+=== Define composition?  
+
+Holding the reference of the other class within some other class is known as composition.  
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+= Java Core
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+=== What is the purpose of File class?  
+
+It is used to create objects that provide access to the files and directories of a local file system.  
+
+
+=== What is the difference between the Reader/Writer class hierarchy and the InputStream/OutputStream class hierarchy?  
+
+The Reader/Writer class hierarchy is character-oriented, and the InputStream/OutputStream class hierarchy is byte-oriented.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

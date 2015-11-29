@@ -1,0 +1,989 @@
+= Java Core
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+== SQL
+
+=== What are the different types of locking in JDBC?
+
+On a broad level, there are two types of locking mechanism to prevent data corruption because of more than one user working with the same data.
+
+1.  Optimistic Locking – Locking the record only when update is taking place
+2.  Pessimistic Locking – Locking the record from the select to read, update and commit phase.
+Apart from that some DBMS systems provide locking mechanism to lock single row, table or database.
+
+=== What do you understand by DDL and DML statements?
+
+Data Definition Language (DDL) statements are used to define the database schema. Create, Alter, Drop, Truncate, Rename statements comes under DDL statements and usually they don’t return any result.
+
+Data Manipulation Language (DML) statements are used to manipulate data in the database schema. Select, Insert, Update, Delete, Call etc are example of DML statements.
+
+
+=== What is phantom read and which isolation level prevents it?
+
+A phantom read is the situation where a transaction executes a query multiple times and get different data. Suppose a transaction is executing a query to get data based on a condition and then another transaction inserts a row that matches the condition. Now when same transaction will execute the query again, a new row will be part of the result set. This new row is referred as Phantom Row and this situation is termed as Phantom Read.
+
+Phantom read can be prevented only with TRANSACTION_SERIALIZABLE isolation level.
+
+
+=== What is SQL Warning? How to retrieve SQL warnings in the JDBC program?
+
+SQLWarning is the subclass of SQLException and we can retrieve it by calling getWarnings() method on Connection, Statement, and ResultSet objects. SQL Warnings doesn’t stops the execution of the script but alerts the user about the warning.
+
+
+
+
+
+
+
+== JDBC
+
+
+=== What is JDBC API and when do we use it?
+
+**Java DataBase Connectivity** API allows us to work with relational databases. JDBC API interfaces and classes are part of ``java.sql`` and ``javax.sql`` package. We can use JDBC API to get the database connection, run SQL queries and stored procedures in the database server and process the results.
+
+JDBC API is written in a way to allow loose coupling between our Java program and actual JDBC drivers that makes our life easier in switching from one database to another database servers easily.
+
+
+=== What is JDBC ?
+
+JDBC is an abstraction layer that allows users to choose between databases. http://www.javacodegeeks.com/2014/03/java-8-friday-java-8-will-revolutionize-database-access.html[JDBC enables developers to write database applications in Java], without having to concern themselves with the underlying details of a particular database.
+
+
+=== What are different types of JDBC Drivers?
+
+There are four types of JDBC drivers. Any java program that works with database has two parts, first part is the JDBC API and second part is the driver that does the actual work.
+
+image::../images/JDBC-Drivers.png[JDBC-Drivers]
+
+1.  **JDBC-ODBC Bridge plus ODBC Driver (Type 1)**: It uses ODBC driver to connect to database. We should have ODBC drivers installed to connect to database, that’s why this driver is almost obsolete.
+2.  **Native API partly Java technology-enabled driver (Type 2)**: This driver converts JDBC class to the client API for the database servers. We should have database client API installed. Because of extra dependency on database client API drivers, this is also not preferred driver.
+3.  **Pure Java Driver for Database Middleware (Type 3)**: This driver sends the JDBC calls to a middleware server that can connect to different type of databases. We should have a middleware server installed to work with this driver. This adds to extra network calls and slow performance and thats why not widely used JDBC driver.
+4.  **Direct-to-Database Pure Java Driver (Type 4)**: This driver converts the JDBC calls to the network protocol understood by the database server. This solution is simple and suitable for database connectivity over the network. However for this solution, we should use database specific drivers, for example OJDBC jars by Oracle for Oracle DB and MySQL Connector/J for MySQL databases.
+
+
+=== Explain the role of Driver in JDBC. 
+
+The JDBC Driver provides vendor-specific implementations of the abstract classes provided by the JDBC API. Each driver must provide implementations for the following classes of the java.sql package:``http://docs.oracle.com/javase/7/docs/api/java/sql/Connection.html[Connection]``, ``http://docs.oracle.com/javase/7/docs/api/java/sql/Statement.html[Statement]``, ``http://docs.oracle.com/javase/7/docs/api/java/sql/PreparedStatement.html[PreparedStatement]``, ``http://docs.oracle.com/javase/7/docs/api/java/sql/CallableStatement.html[CallableStatement]``, ``http://docs.oracle.com/javase/7/docs/api/java/sql/ResultSet.html[ResultSet]`` and ``http://docs.oracle.com/javase/7/docs/api/java/sql/Driver.html[Driver]``.
+
+
+
+=== What is JDBC Statement?
+
+JDBC API ``Statement`` is used to execute SQL queries in the database. We can create the Statement object by calling Connection __getStatement()__ method. We can use Statement to execute static SQL queries by passing query through different execute methods such as execute(), executeQuery(), executeUpdate() etc.
+
+Since the query is generated in the java program, if the user input is not properly validated it can lead to SQL injection issue, more details can be found at http://www.journaldev.com/2489/jdbc-statement-vs-preparedstatement-sql-injection-example[SQL Injection Example].
+
+By default, only one ResultSet object per Statement object can be open at the same time. Therefore, if we want to work with multiple ResultSet objects, then each must have been generated by different Statement objects. All execute() methods in the Statement interface implicitly close a statment’s current ResultSet object if an open one exists.
+
+
+=== What is the difference between execute, executeQuery, executeUpdate?
+
+Statement __execute(String query)__ is used to execute any SQL query and it returns TRUE if the result is an ResultSet such as running Select queries. The output is FALSE when there is no ResultSet object such as running Insert or Update queries. We can use __getResultSet()__ to get the ResultSet and __getUpdateCount()__method to retrieve the update count.
+
+Statement __executeQuery(String query)__ is used to execute Select queries and returns the ResultSet. ResultSet returned is never null even if there are no records matching the query. When executing select queries we should use executeQuery method so that if someone tries to execute insert/update statement it will throw java.sql.SQLException with message “executeQuery method can not be used for update”.
+
+Statement executeUpdate(String query) is used to execute Insert/Update/Delete (DML) statements or DDL statements that returns nothing. The output is int and equals to the row count for SQL Data Manipulation Language (DML) statements. For DDL statements, the output is 0.
+
+You should use execute() method only when you are not sure about the type of statement else use executeQuery or executeUpdate method.
+
+
+=== What is JDBC PreparedStatement?
+
+JDBC ``PreparedStatement`` object represents a precompiled SQL statement. We can use it’s setter method to set the variables for the query.
+
+Since PreparedStatement is precompiled, it can then be used to efficiently execute this statement multiple times. PreparedStatement is better choice that Statement because it automatically escapes the special characters and avoid SQL injection attacks.
+
+
+=== What are the benefits of PreparedStatement over Statement?
+
+Some of the benefits of PreparedStatement over Statement are:
+
+*   PreparedStatement helps us in preventing SQL injection attacks because it automatically escapes the special characters.
+*   PreparedStatement allows us to execute dynamic queries with parameter inputs.
+*   PreparedStatement is faster than Statement. It becomes more visible when we reuse the PreparedStatement or use it’s batch processing methods for executing multiple queries.
+*   PreparedStatement helps us in writing object Oriented code with setter methods whereas with Statement we have to use String Concatenation to create the query. If there are multiple parameters to set, writing Query using String concatenation looks very ugly and error prone.
+
+
+
+=== What is the limitation of PreparedStatement and how to overcome it?
+
+One of the limitation of PreparedStatement is that we can’t use it directly with IN clause statements. Some of the alternative approaches to use PreparedStatement with IN clause are;
+
+1.  **Execute Single Queries** – very slow performance and not recommended
+2.  **Using Stored Procedure** – Database specific and hence not suitable for multiple database applications.
+3.  **Creating PreparedStatement Query dynamically** – Good approach but looses the benefit of cached PreparedStatement.
+4.  **Using NULL in PreparedStatement Query** – A good approach when you know the maximum number of variables inputs, can be extended to allow unlimited parameters by executing in parts.
+A more detailed analysis can be found at http://www.journaldev.com/2521/jdbc-preparedstatement-in-clause-alternative-approaches[JDBC PreparedStatement IN clause alternatives].
+
+
+=== How to set NULL values in JDBC PreparedStatement?
+
+We can use PreparedStatement setNull() method to bind the null variable to a parameter. The setNull method takes index and SQL Types as argument, for example  
+``ps.setNull(10, java.sql.Types.INTEGER);``.
+
+
+=== What is JDBC ResultSet?
+
+JDBC ``ResultSet`` is like a table of data representing a database result set, which is usually generated by executing a statement that queries the database.
+
+ResultSet object maintains a cursor pointing to its current row of data. Initially the cursor is positioned before the first row. The next() method moves the cursor to the next row. If there are no more rows, next() method returns false and it can be used in a while loop to iterate through the result set.
+
+A default ResultSet object is not updatable and has a cursor that moves forward only. Thus, you can iterate through it only once and only from the first row to the last row. It is possible to produce ResultSet objects that are scrollable and/or updatable using below syntax.
+
+
+```java
+Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                   ResultSet.CONCUR_UPDATABLE);
+```
+
+A ResultSet object is automatically closed when the Statement object that generated it is closed, re-executed, or used to retrieve the next result from a sequence of multiple results.
+
+We can use ResultSet getter method with column name or index number starting from 1 to retrieve the column data.
+
+
+=== What are different types of ResultSet?
+
+There are different types of ResultSet objects that we can get based on the user input while creating the Statement. If you will look into the Connection methods, you will see that createStatement() and prepareStatement() method are overloaded to provide ResultSet type and concurrency as input argument.
+
+There are three types of ResultSet object.
+
+1.  **ResultSet.TYPE_FORWARD_ONLY**: This is the default type and cursor can only move forward in the result set.
+2.  **ResultSet.TYPE_SCROLL_INSENSITIVE**: The cursor can move forward and backward, and the result set is not sensitive to changes made by others to the database after the result set was created.
+3.  **ResultSet.TYPE_SCROLL_SENSITIVE**: The cursor can move forward and backward, and the result set is sensitive to changes made by others to the database after the result set was created.
+Based on the concurrency there are two types of ResultSet object.
+
+1.  **ResultSet.CONCUR_READ_ONLY**: The result set is read only, this is the default concurrency type.
+2.  **ResultSet.CONCUR_UPDATABLE**: We can use ResultSet update method to update the rows data.
+
+
+=== What is JDBC RowSet? What are different types of RowSet?
+
+JDBC ``RowSet`` holds tabular data in more flexible ways that ResultSet. All RowSet objects are derived from ResultSet, so they have all the capabilities of ResultSet with some additional features. RowSet interface is defined in ``javax.sql`` package.
+
+Some additional features provided by RowSet are:
+
+*   Functions as Java Beans with properties and their getter-setter methods. RowSet uses JavaBeans event model and they can send notifications to any registered component for events such as cursor movement, update/insert/delete of a row and change to RowSet contents.
+*   RowSet objects are scrollable and updatable by default, so if DBMS doesn’t support scrollable or updatable ResultSet, we can use RowSet to get these features.
+RowSet are broadly divided into two types:
+
+1.  **Connected RowSet Objects** – These objects are connected to database and are most similar to ResultSet object. JDBC API provides only one connected RowSet object ``javax.sql.rowset.JdbcRowSet``and it’s standard implementation class is ``com.sun.rowset.JdbcRowSetImpl``
+2.  **Disconnected RowSet Objects** – These RowSet objects are not required to connected to a database, so they are more lightweight and serializable. They are suitable for sending data over a network. There are four types of disconnected RowSet implementations.
+
+        *   CachedRowSet – They can get the connection and execute a query and read the ResultSet data to populate the RowSet data. We can manipulate and update data while it is disconnected and reconnect to database and write the changes.
+    *   WebRowSet derived from CachedRowSet – They can read and write XML document.
+    *   JoinRowSet derived from WebRowSet – They can form SQL JOIN without having to connect to a data source.
+    *   FilteredRowSet derived from WebRowSet – We can apply filtering criteria so that only selected data is visible.
+
+=== What is the different between ResultSet and RowSet?
+
+RowSet objects are derived from ResultSet, so they have all the features of ResultSet with some additional features. One of the huge benefit of RowSet is that they can be disconnected and that makes it lightweight and easy to transfer over a network.
+
+Whether to use ResultSet or RowSet depends on your requirements but if you are planning to use ResultSet for longer duration, then a disconnected RowSet is better choice to free database resources.
+
+
+
+=== What is JDBC Batch Processing and what are it’s benefits?
+
+Sometimes we need to run bulk queries of similar kind for a database, for example loading data from CSV files to relational database tables. As we know that we have option to use Statement or PreparedStatement to execute queries. Apart from that JDBC API provides Batch Processing feature through which we can execute bulk of queries in one go for a database.
+
+JDBC API supports batch processing through Statement and PreparedStatement ``addBatch()`` and``executeBatch()`` methods.
+
+Batch Processing is faster than executing one statement at a time because the number of database calls are less, read more at http://www.journaldev.com/2494/jdbc-batch-processing-example-tutorial-with-insert-statements[JDBC Batch Processing Example].
+
+
+
+
+
+=== What is the advantage of PreparedStatement over Statement ? 
+
+PreparedStatements are precompiled and thus, http://examples.javacodegeeks.com/core-java/sql/batch-statement-execution-example/[their performance is much better]. Also, PreparedStatement objects can be reused with different input values to their queries.
+
+=== What is the use of CallableStatement ? Name the method, which is used to prepare a CallableStatement.
+
+A ``http://docs.oracle.com/javase/7/docs/api/java/sql/CallableStatement.html[CallableStatement]`` is used to execute stored procedures. Stored procedures are stored and offered by a database. Stored procedures may take input values from the user and may return a result. The usage of stored procedures is highly encouraged, because it offers security and modularity.The method that prepares a ``http://docs.oracle.com/javase/7/docs/api/java/sql/CallableStatement.html[CallableStatement]`` is the following:
+
+[source,xml]
+----
+CallableStament.prepareCall();
+----
+
+
+
+=== What is JDBC Transaction Management and why do we need it?
+
+By default when we create a database connection, it runs in auto-commit mode. It means that whenever we execute a query and it’s completed, the commit is fired automatically. So every SQL query we fire is a transaction and if we are running some DML or DDL queries, the changes are getting saved into database after every SQL statement finishes.
+
+Sometimes we want a group of SQL queries to be part of a transaction so that we can commit them when all the queries runs fine and if we get any exception, we have a choice of rollback all the queries executed as part of the transaction.
+
+JDBC API provide method ``setAutoCommit(boolean flag)`` through which we can disable the auto commit feature of the connection. We should disable auto commit only when it’s required because the transaction will not be committed unless we call the commit() method on connection. Database servers uses table locks to achieve transaction management and it’s resource intensive process. So we should commit the transaction as soon as we are done with it. Read more with example program athttp://www.journaldev.com/2483/jdbc-transaction-management-and-savepoint-example-tutorial[JDBC Transaction Management Example].
+
+
+=== How to rollback a JDBC transaction?
+
+We can use Connection object ``rollback()`` method to rollback the transaction. It will rollback all the changes made by the transaction and release any database locks currently held by this Connection object.
+
+
+
+
+=== What is JDBC Savepoint? How to use it?
+
+Sometimes a transaction can be group of multiple statements and we would like to rollback to a particular point in the transaction. JDBC Savepoint helps us in creating checkpoints in a transaction and we can rollback to that particular checkpoint.
+
+Any savepoint created for a transaction is automatically released and become invalid when the transaction is committed, or when the entire transaction is rolled back. Rolling a transaction back to a savepoint automatically releases and makes invalid any other savepoints that were created after the savepoint in question. Read more at http://www.journaldev.com/2483/jdbc-transaction-management-and-savepoint-example-tutorial[JDBC Savepoint Example].
+
+
+
+
+=== What is JDBC DataSource and what are it’s benefits?
+
+JDBC DataSource is the interface defined in ``javax.sql`` package and it is more powerful that DriverManager for database connections. We can use DataSource to create the database connection and Driver implementation classes does the actual work for getting connection. Apart from getting Database connection, DataSource provides some additional features such as:
+
+*   Caching of PreparedStatement for faster processing
+*   Connection timeout settings
+*   Logging features
+*   ResultSet maximum size threshold
+*   Connection Pooling in servlet container using JNDI support
+Read more about DataSource at http://www.journaldev.com/2509/jdbc-datasource-example-oracle-mysql-and-apache-dbcp-tutorial[JDBC DataSource Example].
+
+
+
+
+=== What does Connection pooling mean ? 
+
+The interaction with a database can be costly, regarding the opening and closing of database connections. Especially, when the number of database clients increases, this cost is very high and a large number of resources is consumed.A pool of database connections is obtained at start up by the application server and is maintained in a pool. A request for a connection is served by a http://examples.javacodegeeks.com/enterprise-java/hibernate/hibernate-connection-pool-configuration-with-c3p0-example/[connection residing in the pool]. In the end of the connection, the request is returned to the pool and can be used to satisfy future requests.
+
+
+=== How does JDBC API helps us in achieving loose coupling between Java Program and JDBC Drivers API?
+
+JDBC API uses http://www.journaldev.com/1789/java-reflection-tutorial-for-classes-methods-fields-constructors-annotations-and-much-more[Java Reflection API] to achieve loose coupling between java programs and JDBC Drivers. If you look at a simple JDBC example, you will notice that all the programming is done in terms of JDBC API and Driver comes in picture only when it’s loaded through reflection using ``Class.forName()`` method.
+
+I think this is one of the best example of using Reflection in core java classes to make sure that our application doesn’t work directly with Drivers API and that makes it very easy to move from one database to another. Please read more at http://www.journaldev.com/2471/jdbc-example-tutorial-drivers-connection-statement-resultset[JDBC Example].
+
+
+=== What is JDBC Connection? Explain steps to get Database connection in a simple java program.
+
+JDBC Connection is like a Session created with the database server. You can also think Connection is like a http://www.journaldev.com/741/java-socket-server-client-read-write-example[Socket connection] from the database server.
+
+Creating a JDBC Connection is very easy and requires two steps:
+
+1.  Register and Load the Driver: Using ``Class.forName()``, Driver class is registered to the DriverManager and loaded in the memory.
+2.  Use DriverManager to get the Connection object: We get connection object from``DriverManager.getConnection()`` by passing Database URL String, username and password as argument.
+
+[source,java]
+----
+Connection con = null;
+try{
+    // load the Driver Class
+    Class.forName("com.mysql.jdbc.Driver");
+ 
+    // create the connection now
+    con = DriverManager.getConnection("jdbc:mysql://localhost:3306/UserDB",
+                    "pankaj",
+                    "pankaj123");
+    }catch (SQLException e) {
+            System.out.println("Check database is UP and configs are correct");
+            e.printStackTrace();
+    }catch (ClassNotFoundException e) {
+            System.out.println("Please include JDBC MySQL jar in classpath");
+            e.printStackTrace();
+    }
+----
+
+=== What is JDBC Connection isolation levels?
+
+When we use JDBC Transactions for data integrity, DBMS uses locks to block access by others to the data being accessed by the transaction. DBMS uses locks to prevent Dirty Read, Non-Repeatable Reads and Phantom-Read issue.
+
+JDBC transaction isolation level is used by DBMS to use the locking mechanism, we can get the isolation level information through Connection getTransactionIsolation() method and set it with setTransactionIsolation() method.
+
+[width="100%",options="header,footer"]
+|====
+| Isolation Level | Transaction | Dirty Read | Non-Repeatable Read | Phantom Read
+| TRANSACTION_NONE | Not Supported | Not Applicable | Not Applicable | Not Applicable
+| TRANSACTION_READ_COMMITTED | Supported | Prevented | Allowed | Allowed
+| TRANSACTION_READ_UNCOMMITTED | Supported | Allowed | Allowed | Allowed
+| TRANSACTION_REPEATABLE_READ | Supported | Prevented | Prevented | Allowed
+| TRANSACTION_SERIALIZABLE | Supported | Prevented | Prevented | Prevented
+|====
+
+
+
+=== What is “dirty read” in JDBC? Which isolation level prevents dirty read?
+
+When we work with transactions, there is a chance that a row is updated and at the same time other query can read the updated value. This results in a dirty read because the updated value is not permanent yet, the transaction that has updated the row can rollback to previous value resulting in invalid data.
+
+Dirty Read is prevented by isolation levels TRANSACTION_READ_COMMITTED, TRANSACTION_REPEATABLE_READ and TRANSACTION_SERIALIZABLE.
+
+
+=== What is 2 phase commit?
+
+When we work in distributed systems where multiple databases are involved, we are required to use 2 phase commit protocol. 2 phase commit protocol is an atomic commitment protocol for distributed systems. In the first phase, transaction manager sends commit-request to all the transaction resources. If all the transaction resources are OK, then transaction manager commits the transaction changes for all the resources. If any of the transaction resource responds as Abort, then the transaction manager can rollback all the transaction changes.
+
+
+
+=== What is the use of JDBC DriverManager class?
+
+JDBC ``DriverManager`` is the factory class through which we get the Database Connection object. When we load the JDBC Driver class, it registers itself to the DriverManager, you can look up the JDBC Driver classes source code to check this.
+
+Then when we call ``DriverManager.getConnection()`` method by passing the database configuration details, DriverManager uses the registered drivers to get the Connection and return it to the caller program.
+
+
+
+=== What are common JDBC Exceptions?
+
+Some of the common JDBC Exceptions are:
+
+1.  java.sql.SQLException – This is the base exception class for JDBC exceptions.
+2.  java.sql.BatchUpdateException – This exception is thrown when Batch operation fails, but it depends on the JDBC driver whether they throw this exception or the base SQLException.
+3.  java.sql.SQLWarning – For warning messages in SQL operations.
+4.  java.sql.DataTruncation – when a data values is unexpectedly truncated for reasons other than its having exceeded MaxFieldSize.
+
+
+=== How to get the Database server details in java program?
+
+We can use ``DatabaseMetaData`` object to get the database server details. When the database connection is created successfully, we can get the meta data object by calling __getMetaData()__ method. There are so many methods in DatabaseMetaData that we can use to get the database product name, it’s version and configuration details.
+
+[source,java]
+----
+DatabaseMetaData metaData = con.getMetaData();
+String dbProduct = metaData.getDatabaseProductName();
+----
+
+
+=== What is the use of `getGeneratedKeys()` method in Statement?
+
+Sometimes a table can have auto generated keys used to insert the unique column value for primary key. We can use Statement ``getGeneratedKeys()`` method to get the value of this auto generated key.
+
+
+=== What is the use of setFetchSize() and setMaxRows() methods in Statement?
+
+We can use ``setMaxRows(int i)`` method to limit the number of rows that the database returns from the query. You can achieve the same thing using SQL query itself. For example in MySQL we can use LIMIT clause to set the max rows that will be returned by the query.
+
+Understanding **fetchSize** can be tricky, for that you should know how Statement and ResultSet works. When we execute a query in the database, the result is obtained and maintained in the database cache and ResultSet is returned. ResultSet is the cursor that has the reference to the result in the database.
+
+Let’s say we have a query that returns 100 rows and we have set fetchSize to 10, so in every database trip JDBC driver will fetch only 10 rows and hence there will be 10 trips to fetch all the rows. Setting optimal fetchSize is helpful when you need a lot of processing time for each row and number of rows in the result is huge.
+
+We can set fetchSize through Statement object but it can be overridden through ResultSet object setFetchSize() method.
+
+
+=== How to use JDBC API to call Stored Procedures?
+
+Stored Procedures are group of SQL queries that are compiled in the database and can be executed from JDBC API. JDBC ``CallableStatement`` can be used to execute stored procedures in the database. The syntax to initialize CallableStatement is;
+
+
+```java
+CallableStatement stmt = con.prepareCall("{call insertEmployee(?,?,?,?,?,?)}");
+stmt.setInt(1, id);
+stmt.setString(2, name);
+stmt.setString(3, role);
+stmt.setString(4, city);
+stmt.setString(5, country);
+ 
+//register the OUT parameter before calling the stored procedure
+stmt.registerOutParameter(6, java.sql.Types.VARCHAR);
+              
+stmt.executeUpdate();
+```
+
+We need to register the OUT parameters before executing the CallableStatement. More details about this can be found at http://www.journaldev.com/2502/jdbc-callablestatement-stored-procedure-in-out-oracle-struct-cursor-example-tutorial[JDBC CallableStatement Example].
+
+
+=== What is the purpose Class.forName method ? 
+
+This method is used to method is used to load the driver that will establish a connection to the database.
+
+
+=== What is CLOB and BLOB datatypes in JDBC?
+
+Character Large OBjects (CLOBs) are character string made up of single-byte characters with an associated code page. This data type is appropriate for storing text-oriented information where the amount of information can grow beyond the limits of a regular VARCHAR data type (upper limit of 32K bytes).
+
+Binary Large OBjects (BLOBs) are binary string made up of bytes with no associated code page. This data type can store binary data larger than VARBINARY (32K limit). This data type is good for storing image, voice, graphical, and other types of business or application-specific data.
+
+
+=== What are JDBC Best Practices?
+
+Some of the JDBC Best Practices are:
+
+*   Database resources are heavy, so make sure you close it as soon as you are done with it. Connection, Statement, ResultSet and all other JDBC objects have close() method defined to close them.
+*   Always close the result set, statement and connection explicitly in the code, because if you are working in connection pooling environment, the connection might be returned to the pool leaving open result sets and statement objects resulting in resource leak.
+*   Close the resources in the finally block to make sure they are closed even in case of exception scenarios.
+*   Use batch processing for bulk operations of similar kind.
+*   Always use PreparedStatement over Statement to avoid SQL Injection and get pre-compilation and caching benefits of PreparedStatement.
+*   If you are retrieving bulk data into result set, setting an optimal value for fetchSize helps in getting good performance.
+*   The database server might not support all isolation levels, so check it before assuming.
+*   More strict isolation levels result in slow performance, so make sure you have optimal isolation level set for your database connections.
+*   If you are creating database connections in a web application, try to use JDBC DataSource resources using JNDI context for re-using the connections.
+*   Try to use disconnected RowSet when you need to work with ResultSet for a long time.
+
+
+
+
+
+== Hibernate and JPA
+
+
+=== What is Hibernate Framework?
+
+**Object-relational mapping** or ORM is the programming technique to map application domain model objects to the relational database tables. Hibernate is java based ORM tool that provides framework for mapping application domain objects to the relational database tables and vice versa.
+
+Hibernate provides reference implementation of Java Persistence API, that makes it a great choice as ORM tool with benefits of loose coupling. We can use Hibernate persistence API for CRUD operations. Hibernate framework provide option to map plain old java objects to traditional database tables with the use of JPA annotations as well as XML based configuration.
+
+Similarly hibernate configurations are flexible and can be done from XML configuration file as well as programmatically. For a quick overview of hibernate framework usage, you can go through http://www.journaldev.com/2882/hibernate-tutorial-for-beginners-using-xml-annotations-and-property-configurations[Hibernate Beginners Tutorial].
+
+
+=== What is Java Persistence API (JPA)?
+
+Java Persistence API (JPA) provides specification for managing the relational data in applications. Current JPA version 2.1 was started in July 2011 as JSR 338. JPA 2.1 was approved as final on 22 May 2013.
+
+JPA specifications is defined with annotations in javax.persistence package. Using JPA annotation helps us in writing implementation independent code.
+
+
+=== What are the important benefits of using Hibernate Framework?
+
+Some of the important benefits of using hibernate framework are:
+
+1.  Hibernate eliminates all the boiler-plate code that comes with JDBC and takes care of managing resources, so we can focus on business logic.
+2.  Hibernate framework provides support for XML as well as JPA annotations, that makes our code implementation independent.
+3.  Hibernate provides a powerful query language (HQL) that is similar to SQL. However, HQL is fully object-oriented and understands concepts like inheritance, polymorphism and association.
+4.  Hibernate is an open source project from Red Hat Community and used worldwide. This makes it a better choice than others because learning curve is small and there are tons of online documentations and help is easily available in forums.
+5.  Hibernate is easy to integrate with other Java EE frameworks, it’s so popular that Spring Framework provides built-in support for integrating hibernate with Spring applications.
+6.  Hibernate supports lazy initialization using proxy objects and perform actual database queries only when it’s required.
+7.  Hibernate cache helps us in getting better performance.
+8.  For database vendor specific feature, hibernate is suitable because we can also execute native sql queries.
+Overall hibernate is the best choice in current market for ORM tool, it contains all the features that you will ever need in an ORM tool.
+
+
+=== What are the advantages of Hibernate over JDBC?
+
+Some of the important advantages of Hibernate framework over JDBC are:
+
+1.  Hibernate removes a lot of boiler-plate code that comes with JDBC API, the code looks more cleaner and readable.
+2.  Hibernate supports inheritance, associations and collections. These features are not present with JDBC API.
+3.  Hibernate implicitly provides transaction management, in fact most of the queries can’t be executed outside transaction. In JDBC API, we need to write code for transaction management using commit and rollback. Read more at http://www.journaldev.com/2483/jdbc-transaction-management-and-savepoint-example-tutorial[JDBC Transaction Management].
+4.  JDBC API throws ``SQLException`` that is a checked exception, so we need to write a lot of try-catch block code. Most of the times it’s redundant in every JDBC call and used for transaction management. Hibernate wraps JDBC exceptions and throw ``JDBCException`` or ``HibernateException`` un-checked exception, so we don’t need to write code to handle it. Hibernate built-in transaction management removes the usage of try-catch blocks.
+5.  Hibernate Query Language (HQL) is more object oriented and close to java programming language. For JDBC, we need to write native sql queries.
+6.  Hibernate supports caching that is better for performance, JDBC queries are not cached hence performance is low.
+7.  Hibernate provide option through which we can create database tables too, for JDBC tables must exist in the database.
+8.  Hibernate configuration helps us in using JDBC like connection as well as JNDI DataSource for connection pool. This is very important feature in enterprise application and completely missing in JDBC API.
+9.  Hibernate supports JPA annotations, so code is independent of implementation and easily replaceable with other ORM tools. JDBC code is very tightly coupled with the application.
+
+
+=== Name some important interfaces of Hibernate framework?
+
+Some of the important interfaces of Hibernate framework are:
+
+1.  **SessionFactory (org.hibernate.SessionFactory)**: SessionFactory is an immutable thread-safe cache of compiled mappings for a single database. We need to initialize SessionFactory once and then we can cache and reuse it. SessionFactory instance is used to get the Session objects for database operations.
+2.  **Session (org.hibernate.Session)**: Session is a single-threaded, short-lived object representing a conversation between the application and the persistent store. It wraps JDBC ``java.sql.Connection``and works as a factory for ``org.hibernate.Transaction``. We should open session only when it’s required and close it as soon as we are done using it. Session object is the interface between java application code and hibernate framework and provide methods for CRUD operations.
+3.  **Transaction (org.hibernate.Transaction)**: Transaction is a single-threaded, short-lived object used by the application to specify atomic units of work. It abstracts the application from the underlying JDBC or JTA transaction. A org.hibernate.Session might span multiple org.hibernate.Transaction in some cases.
+
+
+=== Which design patterns are used in Hibernate framework?
+
+Some of the design patterns used in Hibernate Framework are:
+
+*   Domain Model Pattern – An object model of the domain that incorporates both behavior and data.
+*   Data Mapper – A layer of Mappers that moves data between objects and a database while keeping them independent of each other and the mapper itself.
+*   http://www.journaldev.com/1572/proxy-design-pattern-in-java-example-tutorial[Proxy Pattern] for lazy loading
+*   http://www.journaldev.com/1392/factory-design-pattern-in-java[Factory pattern] in SessionFactory
+
+
+
+=== What is Hibernate SessionFactory and how to configure it?
+
+SessionFactory is the factory class used to get the Session objects. SessionFactory is responsible to read the hibernate configuration parameters and connect to the database and provide Session objects. Usually an application has a single SessionFactory instance and threads servicing client requests obtain Session instances from this factory.
+
+The internal state of a SessionFactory is immutable. Once it is created this internal state is set. This internal state includes all of the metadata about Object/Relational Mapping.
+
+SessionFactory also provide methods to get the Class metadata and Statistics instance to get the stats of query executions, second level cache details etc.
+
+=== Hibernate SessionFactory is thread safe?
+
+Internal state of SessionFactory is immutable, so it’s thread safe. Multiple threads can access it simultaneously to get Session instances.
+
+=== What is Hibernate Session and how to get it?
+
+Hibernate Session is the interface between java application layer and hibernate. This is the core interface used to perform database operations. Lifecycle of a session is bound by the beginning and end of a transaction.
+
+Session provide methods to perform create, read, update and delete operations for a persistent object. We can execute HQL queries, SQL native queries and create criteria using Session object.
+
+=== Hibernate Session is thread safe?
+
+Hibernate Session object is not thread safe, every thread should get it’s own session instance and close it after it’s work is finished.
+
+=== What is difference between openSession and getCurrentSession?
+
+Hibernate SessionFactory getCurrentSession() method returns the session bound to the context. But for this to work, we need to configure it in hibernate configuration file. Since this session object belongs to the hibernate context, we don’t need to close it. Once the session factory is closed, this session object gets closed.
+
+```xml
+<property name="hibernate.current_session_context_class">thread</property>
+```
+
+Hibernate SessionFactory openSession() method always opens a new session. We should close this session object once we are done with all the database operations. We should open a new session for each request in multi-threaded environment.
+
+There is another method openStatelessSession() that returns stateless session, for more details with examples please read http://www.journaldev.com/3522/hibernate-sessionfactory-opensession-vs-getcurrentsession-vs-openstatelesssession[Hibernate openSession vs getCurrentSession].
+
+
+=== What is difference between Hibernate Session get() and load() method?
+
+Hibernate session comes with different methods to load data from database. get and load are most used methods, at first look they seems similar but there are some differences between them.
+
+1.  get() loads the data as soon as it’s called whereas load() returns a proxy object and loads data only when it’s actually required, so load() is better because it support lazy loading.
+2.  Since load() throws exception when data is not found, we should use it only when we know data exists.
+3.  We should use get() when we want to make sure data exists in the database.
+For clarification regarding the differences, please read http://www.journaldev.com/3472/hibernate-session-get-vs-load-difference-with-examples[Hibernate get vs load].
+
+
+
+=== What is hibernate configuration file?
+
+Hibernate configuration file contains database specific configurations and used to initialize SessionFactory. We provide database credentials or JNDI resource information in the hibernate configuration xml file. Some other important parts of hibernate configuration file is Dialect information, so that hibernate knows the database type and mapping file or class details.
+
+=== What is hibernate mapping file?
+
+Hibernate mapping file is used to define the entity bean fields and database table column mappings. We know that JPA annotations can be used for mapping but sometimes XML mapping file comes handy when we are using third party classes and we can’t use annotations.
+
+=== Name some important annotations used for Hibernate mapping?
+
+Hibernate supports JPA annotations and it has some other annotations in ``org.hibernate.annotations``package. Some of the important JPA and hibernate annotations used are:
+
+1.  **javax.persistence.Entity**: Used with model classes to specify that they are entity beans.
+2.  **javax.persistence.Table**: Used with entity beans to define the corresponding table name in database.
+3.  **javax.persistence.Access**: Used to define the access type, either field or property. Default value is field and if you want hibernate to use getter/setter methods then you need to set it to property.
+4.  **javax.persistence.Id**: Used to define the primary key in the entity bean.
+5.  **javax.persistence.EmbeddedId**: Used to define composite primary key in the entity bean.
+6.  **javax.persistence.Column**: Used to define the column name in database table.
+7.  **javax.persistence.GeneratedValue**: Used to define the strategy to be used for generation of primary key. Used in conjunction with ``javax.persistence.GenerationType`` enum.
+8.  **javax.persistence.OneToOne**: Used to define the one-to-one mapping between two entity beans. We have other similar annotations as ``OneToMany``, ``ManyToOne`` and ``ManyToMany``
+9.  **org.hibernate.annotations.Cascade**: Used to define the cascading between two entity beans, used with mappings. It works in conjunction with ``org.hibernate.annotations.CascadeType``
+10.  **javax.persistence.PrimaryKeyJoinColumn**: Used to define the property for foreign key. Used with``org.hibernate.annotations.GenericGenerator`` and ``org.hibernate.annotations.Parameter``
+
+
+Here are two classes showing usage of these annotations.
+
+.Employee.java
+[source,java]
+----
+package com.journaldev.hibernate.model;
+ 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+ 
+import org.hibernate.annotations.Cascade;
+ 
+@Entity
+@Table(name = "EMPLOYEE")
+@Access(value=AccessType.FIELD)
+public class Employee {
+ 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "emp_id")
+    private long id;
+ 
+    @Column(name = "emp_name")
+    private String name;
+ 
+    @OneToOne(mappedBy = "employee")
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    private Address address;
+ 
+    //getter setter methods
+}
+
+----
+
+.Address.java
+[source,java]
+----
+package com.journaldev.hibernate.model;
+ 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+ 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+ 
+@Entity
+@Table(name = "ADDRESS")
+@Access(value=AccessType.FIELD)
+public class Address {
+ 
+    @Id
+    @Column(name = "emp_id", unique = true, nullable = false)
+    @GeneratedValue(generator = "gen")
+    @GenericGenerator(name = "gen", strategy = "foreign", parameters = { @Parameter(name = "property", value = "employee") })
+    private long id;
+ 
+    @Column(name = "address_line1")
+    private String addressLine1;
+ 
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private Employee employee;
+ 
+    //getter setter methods
+}
+
+----
+
+
+
+
+=== What is HibernateTemplate class?
+
+When Spring and Hibernate integration started, Spring ORM provided two helper classes –``HibernateDaoSupport`` and ``HibernateTemplate``. The reason to use them was to get the Session from Hibernate and get the benefit of Spring transaction management. However from Hibernate 3.0.1, we can use ``SessionFactory`` __getCurrentSession()__ method to get the current session and use it to get the spring transaction management benefits. If you go through above examples, you will see how easy it is and that’s why we should not use these classes anymore.
+
+One other benefit of ``HibernateTemplate`` was exception translation but that can be achieved easily by using ``@Repository`` annotation with service classes, shown in above spring mvc example. This is a trick question to judge your knowledge and whether you are aware of recent developments or not.
+
+
+
+
+=== What is HQL and what are it’s benefits?
+
+Hibernate Framework comes with a powerful object-oriented query language – Hibernate Query Language (HQL). It’s very similar to SQL except that we use Objects instead of table names, that makes it more close to object oriented programming.
+
+Hibernate query language is case-insensitive except for java class and variable names. So SeLeCT is the same as sELEct is the same as SELECT, but com.journaldev.model.Employee is not same as com.journaldev.model.EMPLOYEE.
+
+The HQL queries are cached but we should avoid it as much as possible, otherwise we will have to take care of associations. However it’s a better choice than native sql query because of Object-Oriented approach. Read more at http://www.journaldev.com/2954/hibernate-query-language-hql-example-tutorial[HQL Example].
+
+
+=== What is Query Cache in Hibernate?
+
+Hibernate implements a cache region for queries resultset that integrates closely with the hibernate second-level cache.
+
+This is an optional feature and requires additional steps in code. This is only useful for queries that are run frequently with the same parameters. First of all we need to configure below property in hibernate configuration file.
+
+[source,xml]
+----
+<property name="hibernate.cache.use_query_cache">true</property>
+----
+
+And in code, we need to use setCacheable(true) method of Query, quick example looks like below.
+
+[source,java]
+----
+Query query = session.createQuery("from Employee");
+query.setCacheable(true);
+query.setCacheRegion("ALL_EMP");
+----
+
+=== Can we execute native sql query in hibernate?
+
+Hibernate provide option to execute native SQL queries through the use of ``SQLQuery`` object.
+
+For normal scenarios, it is however not the recommended approach because we loose benefits related to hibernate association and hibernate first level caching. Read more at http://www.journaldev.com/3422/hibernate-native-sql-example-addscalar-addentity-addjoin-parameter-example[Hibernate Native SQL Query Example].
+
+
+=== What is the benefit of native sql query support in hibernate?
+
+Native SQL Query comes handy when we want to execute database specific queries that are not supported by Hibernate API such as query hints or the CONNECT keyword in Oracle Database.
+
+=== What is Named SQL Query?
+
+Hibernate provides Named Query that we can define at a central location and use them anywhere in the code. We can created named queries for both HQL and Native SQL.
+
+Hibernate Named Queries can be defined in Hibernate mapping files or through the use of JPA annotations @NamedQuery and @NamedNativeQuery.
+
+=== What are the benefits of Named SQL Query?
+
+Hibernate Named Query helps us in grouping queries at a central location rather than letting them scattered all over the code.  
+
+Hibernate Named Query syntax is checked when the hibernate session factory is created, thus making the application fail fast in case of any error in the named queries.  
+
+Hibernate Named Query is global, means once defined it can be used throughout the application.
+
+However one of the major disadvantage of Named query is that it’s hard to debug, because we need to find out the location where it’s defined.
+
+=== What is the benefit of Hibernate Criteria API?
+
+Hibernate provides Criteria API that is more object oriented for querying the database and getting results. We can’t use Criteria to run update or delete queries or any DDL statements. It’s only used to fetch the results from the database using more object oriented approach.
+
+Some of the common usage of Criteria API are:
+
+*   Criteria API provides Projection that we can use for aggregate functions such as sum(), min(), max() etc.
+*   Criteria API can be used with ProjectionList to fetch selected columns only.
+*   Criteria API can be used for join queries by joining multiple tables, useful methods are createAlias(), setFetchMode() and setProjection()
+*   Criteria API can be used for fetching results with conditions, useful methods are add() where we can add Restrictions.
+*   Criteria API provides addOrder() method that we can use for ordering the results.
+Learn some quick examples at http://www.journaldev.com/2963/hibernate-criteria-example-tutorial[Hibernate Criteria Example].
+
+
+=== What is Hibernate Proxy and how it helps in lazy loading?
+
+Hibernate uses proxy object to support lazy loading. Basically when you load data from tables, hibernate doesn’t load all the mapped objects. As soon as you reference a child or lookup object via getter methods, if the linked entity is not in the session cache, then the proxy code will go to the database and load the linked object. It uses javassist to effectively and dynamically generate sub-classed implementations of your entity objects.
+
+
+=== How to implement relationships in hibernate?
+
+We can easily implement one-to-one, one-to-many and many-to-many relationships in hibernate. It can be done using JPA annotations as well as XML based configurations. For better understanding, you should go through following tutorials.
+
+1.  http://www.journaldev.com/2916/hibernate-one-to-one-mapping-annotation-and-xml-configuration-example[Hibernate One to One Mapping]
+2.  http://www.journaldev.com/2924/hibernate-one-to-many-mapping-annotation-and-xml-configuration-example-tutorial[Hibernate One to Many Mapping]
+3.  http://www.journaldev.com/2934/hibernate-many-to-many-mapping-join-tables-annotation-and-xml-configuration-example[Hibernate Many to Many Mapping]
+
+
+=== How transaction management works in Hibernate?
+
+Transaction management is very easy in hibernate because most of the operations are not permitted outside of a transaction. So after getting the session from SessionFactory, we can call session``beginTransaction()`` to start the transaction. This method returns the Transaction reference that we can use later on to either commit or rollback the transaction.
+
+Overall hibernate transaction management is better than JDBC transaction management because we don’t need to rely on exceptions for rollback. Any exception thrown by session methods automatically rollback the transaction.
+
+
+=== What is cascading and what are different types of cascading?
+
+When we have relationship between entities, then we need to define how the different operations will affect the other entity. This is done by cascading and there are different types of it.
+
+Here is a simple example of applying cascading between primary and secondary entities.
+
+[source,java]
+----
+import org.hibernate.annotations.Cascade;
+ 
+@Entity
+@Table(name = "EMPLOYEE")
+public class Employee {
+ 
+    @OneToOne(mappedBy = "employee")
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    private Address address;
+}
+----
+
+Note that Hibernate CascadeType enum constants are little bit different from JPA``javax.persistence.CascadeType``, so we need to use the Hibernate CascadeType and Cascade annotations for mappings, as shown in above example.  
+
+Commonly used cascading types as defined in CascadeType enum are:
+
+1.  None: No Cascading, it’s not a type but when we don’t define any cascading then no operations in parent affects the child.
+2.  ALL: Cascades save, delete, update, evict, lock, replicate, merge, persist. Basically everything
+3.  SAVE_UPDATE: Cascades save and update, available only in hibernate.
+4.  DELETE: Corresponds to the Hibernate native DELETE action, only in hibernate.
+5.  DETATCH, MERGE, PERSIST, REFRESH and REMOVE – for similar operations
+6.  LOCK: Corresponds to the Hibernate native LOCK action.
+7.  REPLICATE: Corresponds to the Hibernate native REPLICATE action.
+
+
+
+=== What is hibernate caching? Explain Hibernate first level cache?
+
+As the name suggests, hibernate caches query data to make our application faster. Hibernate Cache can be very useful in gaining fast application performance if used correctly. The idea behind cache is to reduce the number of database queries, hence reducing the throughput time of the application.
+
+Hibernate first level cache is associated with the Session object. Hibernate first level cache is enabled by default and there is no way to disable it. However hibernate provides methods through which we can delete selected objects from the cache or clear the cache completely.  
+
+Any object cached in a session will not be visible to other sessions and when the session is closed, all the cached objects will also be lost.
+
+For better explanation, please read http://www.journaldev.com/2969/hibernate-first-level-cache-example-with-explanation[Hibernate First Level Cache].
+
+
+=== What are different states of an entity bean?
+
+An entity bean instance can exist is one of the three states.
+
+1.  **Transient**: When an object is never persisted or associated with any session, it’s in transient state. Transient instances may be made persistent by calling save(), persist() or saveOrUpdate(). Persistent instances may be made transient by calling delete().
+2.  **Persistent**: When an object is associated with a unique session, it’s in persistent state. Any instance returned by a get() or load() method is persistent.
+3.  **Detached**: When an object is previously persistent but not associated with any session, it’s in detached state. Detached instances may be made persistent by calling update(), saveOrUpdate(), lock() or replicate(). The state of a transient or detached instance may also be made persistent as a new persistent instance by calling merge().
+
+
+=== What is use of Hibernate Session merge() call?
+
+Hibernate merge can be used to update existing values, however this method create a copy from the passed entity object and return it. The returned object is part of persistent context and tracked for any changes, passed object is not tracked. For example program, read http://www.journaldev.com/3481/hibernate-save-vs-saveorupdate-vs-persist-vs-merge-vs-update-explanation-with-examples[Hibernate merge].
+
+
+=== What is difference between Hibernate save(), saveOrUpdate() and persist() methods?
+
+Hibernate save can be used to save entity to database. Problem with save() is that it can be invoked without a transaction and if we have mapping entities, then only the primary object gets saved causing data inconsistencies. Also save returns the generated id immediately.
+
+Hibernate persist is similar to save with transaction. I feel it’s better than save because we can’t use it outside the boundary of transaction, so all the object mappings are preserved. Also persist doesn’t return the generated id immediately, so data persistence happens when needed.
+
+Hibernate saveOrUpdate results into insert or update queries based on the provided data. If the data is present in the database, update query is executed. We can use saveOrUpdate() without transaction also, but again you will face the issues with mapped objects not getting saved if session is not flushed. For example usage of these methods, read http://www.journaldev.com/3481/hibernate-save-vs-saveorupdate-vs-persist-vs-merge-vs-update-explanation-with-examples[Hibernate save vs persist].
+
+
+=== How to implement Joins in Hibernate?
+
+There are various ways to implement joins in hibernate.
+
+*   Using associations such as one-to-one, one-to-many etc.
+*   Using JOIN in the HQL query. There is another form “join fetch” to load associated data simultaneously, no lazy loading.
+*   We can fire native sql query and use join keyword.
+
+
+
+=== What are the collection types in Hibernate?
+
+There are five collection types in hibernate used for one-to-many relationship mappings.
+
+1.  Bag
+2.  Set
+3.  List
+4.  Array
+5.  Map
+
+
+
+
+=== What is difference between sorted collection and ordered collection, which one is better?
+
+When we use Collection API sorting algorithms to sort a collection, it’s called sorted list. For small collections, it’s not much of an overhead but for larger collections it can lead to slow performance and OutOfMemory errors. Also the entity beans should implement ``Comparable`` or ``Comparator`` interface for it to work, read more at http://www.journaldev.com/780/java-comparable-and-comparator-example-to-sort-objects[java object list sorting].
+
+If we are using Hibernate framework to load collection data from database, we can use it’s Criteria API to use “order by” clause to get ordered list. Below code snippet shows you how to get it.
+
+[source,xml]
+----
+List<Employee> empList = session.createCriteria(Employee.class)
+                        .addOrder(Order.desc("id")).list();
+
+----
+
+Ordered list is better than sorted list because the actual sorting is done at database level, that is fast and doesn’t cause memory issues.
+
+
+
+=== What will happen if we don’t have no-args constructor in Entity bean?
+
+Hibernate uses http://www.journaldev.com/1789/java-reflection-tutorial-for-classes-methods-fields-constructors-annotations-and-much-more[Reflection API] to create instance of Entity beans, usually when you call get() or load() methods. The method ``Class.newInstance()`` is used for this and it requires no-args constructor. So if you won’t have no-args constructor in entity beans, hibernate will fail to instantiate it and you will get``HibernateException``.
+
+
+=== Why we should not make Entity Class final?
+
+Hibernate use proxy classes for lazy loading of data, only when it’s needed. This is done by extending the entity bean, if the entity bean will be final then lazy loading will not be possible, hence low performance.
+
+
+=== What are best practices to follow with Hibernate framework?
+
+Some of the best practices to follow in Hibernate are:
+
+*   Always check the primary key field access, if it’s generated at the database layer then you should not have a setter for this.
+*   By default hibernate set the field values directly, without using setters. So if you want hibernate to use setters, then make sure proper access is defined as ``@Access(value=AccessType.PROPERTY)``.
+*   If access type is property, make sure annotations are used with getter methods and not setter methods. Avoid mixing of using annotations on both filed and getter methods.
+*   Use native sql query only when it can’t be done using HQL, such as using database specific feature.
+*   If you have to sort the collection, use ordered list rather than sorting it using Collection API.
+*   Use named queries wisely, keep it at a single place for easy debugging. Use them for commonly used queries only. For entity specific query, you can keep them in the entity bean itself.
+*   For web applications, always try to use JNDI DataSource rather than configuring to create connection in hibernate.
+*   Avoid Many-to-Many relationships, it can be easily implemented using bidirectional One-to-Many and Many-to-One relationships.
+*   For collections, try to use Lists, maps and sets. Avoid array because you don’t get benefit of lazy loading.
+*   Do not treat exceptions as recoverable, roll back the Transaction and close the Session. If you do not do this, Hibernate cannot guarantee that in-memory state accurately represents the persistent state.
+*   Prefer DAO pattern for exposing the different methods that can be used with entity bean
+*   Prefer lazy fetching for associations
+
+
+
+
+
+
+=== How to log hibernate generated sql queries in log files?
+
+We can set below property for hibernate configuration to log SQL queries.
+
+[source,xml]
+----
+<property name="hibernate.show_sql">true</property>
+----
+
+However we should use it only in Development or Testing environment and turn it off in production environment.
+
+
+=== How to integrate log4j logging in hibernate application?
+
+Hibernate 4 uses JBoss logging rather than slf4j used in earlier versions. For log4j configuration, we need to follow below steps.
+
+*   Add log4j dependencies for maven project, if not maven then add corresponding jar files.
+*   Create log4j.xml configuration file or log4j.properties file and keep it in the classpath. You can keep file name whatever you want because we will load it in next step.
+*   For standalone projects, use static block to configure log4j using ``DOMConfigurator`` or``PropertyConfigurator``. For web applications, you can use ServletContextListener to configure it.
+That’s it, our setup is ready. Create ``org.apache.log4j.Logger`` instance in the java classes and start logging. For complete example code, you should go through http://www.journaldev.com/2984/hibernate-4-log4j-configuration-example[Hibernate log4j example] and http://www.journaldev.com/1997/servlet-example-in-java-with-database-connection-and-log4j-integration[Servlet log4j example].
+
+
+=== How to use application server JNDI DataSource with Hibernate framework?
+
+For web applications, it’s always best to allow servlet container to manage the connection pool. That’s why we define JNDI resource for DataSource and we can use it in the web application. It’s very easy to use in Hibernate, all we need is to remove all the database specific properties and use below property to provide the JNDI DataSource name.
+
+[source,xml]
+----
+<property name="hibernate.connection.datasource">java:comp/env/jdbc/MyLocalDB</property>
+----
+
+
+=== How to integrate Hibernate and Spring frameworks?
+
+Spring is one of the most used Java EE Framework and Hibernate is the most popular ORM framework. That’s why Spring Hibernate combination is used a lot in enterprise applications. The best part with using Spring is that it provides out-of-box integration support for Hibernate with **Spring ORM** module. Following steps are required to integrate Spring and Hibernate frameworks together.
+
+1.  Add hibernate-entitymanager, hibernate-core and spring-orm dependencies.
+2.  Create Model classes and corresponding DAO implementations for database operations. Note that DAO classes will use SessionFactory that will be injected by Spring Bean configuration.
+3.  If you are using Hibernate 3, you need to configure``org.springframework.orm.hibernate3.LocalSessionFactoryBean`` or``org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean`` in Spring Bean configuration file. For Hibernate 4, there is single class``org.springframework.orm.hibernate4.LocalSessionFactoryBean`` that should be configured.
+4.  Note that we don’t need to use Hibernate Transaction Management, we can leave it to Spring declarative transaction management using ``@Transactional`` annotation.
+For complete example go through http://www.journaldev.com/3524/spring-hibernate-integration-example-tutorial-spring-4-hibernate-3-and-hibernate-4[Spring Hibernate Integration] and http://www.journaldev.com/3531/spring-mvc-hibernate-mysql-integration-crud-example-tutorial[Spring MVC Hibernate Integration].
+
+
+=== How to integrate Hibernate with Servlet or Struts2 web applications?
+
+Hibernate integration with Servlet or Struts2 needs to be done using ``ServletContextListener``, a complete example can be found at http://www.journaldev.com/3557/struts2-hibernate-integration-example-tutorial[Hibernate Struts2 Integration Example].
+
+
+=== What is Hibernate Validator Framework?
+
+Data validation is integral part of any application. You will find data validation at presentation layer with the use of Javascript, then at the server side code before processing it. Also data validation occurs before persisting it, to make sure it follows the correct format.
+
+Validation is a cross cutting task, so we should try to keep it apart from our business logic. That’s why JSR303 and JSR349 provides specification for validating a bean by using annotations. Hibernate Validator provides the reference implementation of both these bean validation specs. Read more athttp://www.journaldev.com/3626/hibernate-validator-jsr303-example-tutorial[Hibernate Validation Example].
+
+
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+== Other
+
+
+=== What is difference between java.util.Date and java.sql.Date?
+
+java.util.Date contains information about the date and time whereas java.sql.Date contains information only about the date, it doesn’t have time information. So if you have to keep time information in the database, it is advisable to use Timestamp or DateTime fields.
+
+
+=== How to invoke Oracle Stored Procedure with Database Objects as IN/OUT?
+
+If Oracle Stored Procedure has IN/OUT parameters as DB Objects then we need to create an Object array of the same size in the program and then use it to create Oracle STRUCT object. Then we can set this STRUCT object for the database object by calling setSTRUCT() method and work with it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

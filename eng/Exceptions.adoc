@@ -1,0 +1,78 @@
+= Java Core
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+=== Difference between `throw` and `throws`?  
+
+It includes:
+
+*   `Throw` is used to trigger an exception where as throws is used in declaration of exception.
+*   Without throws, Checked exception cannot be handled where as checked exception can be propagated with `throws`.
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+=== What is NullPointerException?  
+
+A NullPointerException is thrown when calling the instance method of a null object, accessing or modifying the field of a null object etc. 
+
+=== Does it matter in what order catch statements for FileNotFoundException and IOException are written?  
+
+Yes, it does. The FileNoFoundException is inherited from the IOException. Exception's subclasses have to be caught first.   
+
+
+=== When is the ArrayStoreException thrown?  
+
+When copying elements between different arrays, if the source or destination arguments are not arrays or their types are not compatible, an ArrayStoreException will be thrown. 
+
+=== When ArithmeticException is thrown?  
+
+The ArithmeticException is thrown when integer is divided by zero or taking the remainder of a number by zero. It is never thrown in floating-point operations.
+
+
+=== Which arithmetic operations can result in the throwing of an ArithmeticException?  
+
+Integer / and % can result in the throwing of an ArithmeticException.  
+
+
+=== What is the difference between error and an exception?  
+
+An error is an irrecoverable condition occurring at runtime. Such as OutOfMemory error. Exceptions are conditions that occur because of bad input etc. e.g. FileNotFoundException will be thrown if the specified file does not exist. 
+
+
+=== Is it necessary that each try block must be followed by a catch block?  
+
+It is not necessary that each try block must be followed by a catch block. It should be followed by either a catch block or a finally block.  
+
+=== Can we have try without catch block?
+
+Yes, we can have try-finally statement and hence avoiding catch block.
+
+
+=== What is multi-catch block in java?
+
+Java 7 one of the improvement was multi-catch block where we can catch multiple exceptions in a single catch block. This makes are code shorter and cleaner when every catch block has similar code.
+
+If a catch block handles multiple exception, you can separate them using a pipe (|) and in this case exception parameter (ex) is final, so you can’t change it.
+
+Read more at http://www.journaldev.com/629/catching-multiple-exceptions-in-single-catch-and-rethrowing-exceptions-with-improved-type-checking-java-7-feature[Java multi catch block].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

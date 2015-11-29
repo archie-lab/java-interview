@@ -1,0 +1,63 @@
+= Java Core
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+=== What are the ways in which a thread can enter the waiting state?  
+
+A thread can enter the waiting state by invoking its sleep() method, by blocking on IO, by unsuccessfully attempting to acquire an object's lock, or by invoking an object's wait() method. It can also enter the waiting state by invoking its (deprecated) suspend() method.
+
+=== How does multi-threading take place on a computer with a single CPU?  
+
+The operating system's task scheduler allocates execution time to multiple tasks. By quickly switching between executing tasks, it creates the impression that tasks execute sequentially.  
+
+=== What invokes a thread's run() method?  
+
+After a thread is started, via its start() method of the Thread class, the JVM invokes the thread's run() method when the thread is initially executed.
+
+
+=== What is the difference between yielding and sleeping?  
+
+When a task invokes its yield() method, it returns to the ready state. When a task invokes its sleep() method, it returns to the waiting state.
+
+=== What's the difference between the methods sleep() and wait()?  
+
+The code sleep(2000); puts thread aside for exactly two seconds. The code wait(2000), causes a wait of up to two second. A thread could stop waiting earlier if it receives the notify() or notifyAll() call. The method wait() is defined in the class Object and the method sleep() is defined in the class Thread.  
+
+=== What is synchronization?  
+
+Synchronization is the capability to control the access of multiple threads to shared resources. synchronized keyword in java provides locking which ensures mutual exclusive access of shared resource and prevent data race.  
+
+=== How can a dead thread be restarted?  
+
+A dead thread cannot be restarted.
+
+
+=== When a thread is created and started, what is its initial state?  
+
+A thread is in the ready state as initial state after it has been created and started.  
+=== What is the Locale class?  
+The Locale class is used to tailor program output to the conventions of a particular geographic, political, or cultural region.  
+
+
+=== What are synchronized methods and synchronized statements?  
+
+Synchronized methods are methods that are used to control access to an object. A synchronized statement can only be executed after a thread has acquired the lock for the object or class referenced in the synchronized statement.
+
+=== Describe life cycle of thread?  
+
+A thread is a execution in a program. The life cycle of a thread include −
+
+.   Newborn 
+. stateRunnable 
+. stateRunning 
+. stateBlocked 
+. stateDead 
+
+
+
+
+
+
