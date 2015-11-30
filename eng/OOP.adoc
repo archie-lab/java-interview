@@ -1,4 +1,4 @@
-= Java Core
+= OOP
 :toc: macro
 :numbered:
 

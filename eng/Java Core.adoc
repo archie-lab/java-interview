@@ -634,6 +634,17 @@ Java wrapper classes are the Object representation of eight primitive types in j
 Read more at http://www.journaldev.com/1002/java-wrapper-classes-tutorial-with-examples[Wrapper classes in Java].
 
 
+
+=== Which rules do you have to follow in order to implement an immutable class?
+
+*   All fields should be final and private.
+*   There should be not setter methods.
+*   The class itself should be declared final in order to prevent subclasses to violate the principle of immutability.
+*   If fields are not of a primitive type but a reference to another object:
+ ** There should not be a getter method that exposes the reference directly to the caller.
+    **  Don’t change the referenced objects (or at least changing these references is not visisble to clients of the object).
+
+
 === Which class should you use to obtain design information about an object?  
 
 The `Class` class is used to obtain information about an object's design and `java.lang.Class` class instance represent classes, interfaces in a running Java application.  

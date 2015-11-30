@@ -1,1364 +1,967 @@
-= Java Core
+= Web, Servlets, JSP
 :toc: macro
 :numbered:
 
 toc::[]
 
 
-=== What is Java?
 
-Java is a high-level programming language originally developed by Sun Microsystems and released in 1995. Java runs on a variety of platforms, such as Windows, Mac OS, and the various versions of UNIX.
+== Web
 
-=== Features of Java?
 
-Some features include
+=== What is different between web server and application server?
 
-*   Object Oriented,
-*   Platform Independent,
-*   Robust,
-*   Interpreted,
-*   Multi-threaded
+A web server responsibility is to handler HTTP requests from client browsers and respond with HTML response. A web server understands HTTP language and runs on HTTP protocol.  
 
-=== Why is Java Architectural Neutral?  
+Apache Web Server is kind of a web server and then we have specific containers that can execute servlets and JSPs known as servlet container, for example Tomcat.  
 
-It’s compiler generates an architecture-neutral object file format, which makes the compiled code to be executable on many processors, with the presence of Java runtime system.
+Application Servers provide additional features such as Enterprise JavaBeans support, JMS Messaging support, Transaction Management etc. So we can say that Application server is a web server with additional functionalities to help developers with enterprise applications.
 
-=== How Java enabled High Performance?  
 
-Java uses *Just-In-Time compiler* to enable high performance. +
-Just-In-Time compiler is a program that turns Java bytecode, which is a program that contains instructions that must be interpreted into instructions that can be sent directly to the processor.
+=== Which HTTP method is non-idempotent?
 
+A HTTP method is said to be idempotent if it returns the same result every time. HTTP methods GET, PUT, DELETE, HEAD, and OPTIONS are idempotent method and we should implement our application to make sure these methods always return same result. HTTP method POST is non-idempotent method and we should use post method when implementing something that changes with every request.
 
-=== Why Java is considered dynamic?  
+For example, to access an HTML page or image, we should use GET because it will always return the same object but if we have to save customer information to database, we should use POST method. Idempotent methods are also known as safe methods and we don’t care about the repetitive request from the client for safe methods.
 
-It is designed to adapt to an evolving environment. Java programs can carry extensive amount of run-time information that can be used to verify and resolve accesses to objects on run-time.
 
-=== What is JVM ? Why is Java called the “Platform Independent Programming Language” ?
+=== What is the difference between GET and POST method?
 
-A Java virtual machine (JVM) is a process virtual machine that can execute Java bytecode. Each Java source file is compiled into a bytecode file, which is executed by the JVM. Java was designed to allow application programs to be built that could be run on any platform, without having to be rewritten or recompiled by the programmer for each separate platform. A Java virtual machine makes this possible, because it is aware of the specific instruction lengths and other particularities of the underlying hardware platform.
+*   GET is a safe method (idempotent) where POST is non-idempotent method.
+*   We can send limited data with GET method and it’s sent in the header request URL whereas we can send large amount of data with POST because it’s part of the body.
+*   GET method is not secure because data is exposed in the URL and we can easily bookmark it and send similar request again, POST is secure because data is sent in request body and we can’t bookmark it.
+*   GET is the default HTTP method whereas we need to specify method as POST to send request with POST method.
+*   Hyperlinks in a page uses GET method.
 
 
-=== What is the Difference between JDK and JRE ?
+=== What is MIME Type?
 
-The Java Runtime Environment (JRE) is basically the Java Virtual Machine (JVM) where your Java programs are being executed. It also includes browser plugins for applet execution. The Java Development Kit (JDK) is the full featured Software Development Kit for Java, including the JRE, the compilers and tools (like ``JavaDoc``, and ``Java Debugger``), in order for a user to develop, compile and execute Java applications.
+The “Content-Type” response header is known as MIME Type. Server sends MIME type to client to let them know the kind of data it’s sending. It helps client in rendering the data for user. Some of the mostly used mime types are text/html, text/xml, application/xml etc.
 
+We can use ServletContext getMimeType() method to get the correct MIME type of the file and use it to set the response content type. It’s very useful in downloading file through servlet from server.
 
-=== What does the “static” keyword mean ? Can you override private or static method in Java ?
 
-The static keyword denotes that a member variable or method can be accessed, without requiring an instantiation of the class to which it belongs. A user cannot override http://www.javacodegeeks.com/2012/05/java-static-methods-can-be-code-smell.html[static methods in Java], because method overriding is based upon dynamic binding at runtime and static methods are statically binded at compile time. A static method is not associated with any instance of a class so the concept is not applicable.ccc
+=== What is URL Encoding?
 
+URL Encoding is the process of converting data into CGI form so that it can travel across the network without any issues. URL Encoding strip the white spaces and replace special characters with escape characters. We can use java.net.URLEncoder.encode(String str, String unicode) to encode a String. URL Decoding is the reverse process of encoding and we can use java.net.URLDecoder.decode(String str, String unicode) to decode the encoded string. For example “Pankaj’s Data” is encoded to “Pankaj%27s+Data”.
 
-=== Can you access non static variable in static context ?
 
-A static variable in Java belongs to its class and its value remains the same for all its instances. A static variable is initialized when the class is loaded by the JVM. If your code tries to access a non-static variable, without any instance, the compiler will complain, because those variables are not created yet and they are not associated with any instance.
+=== What is the difference between encodeRedirectUrl and encodeURL?
 
+HttpServletResponse provide method to encode URL in HTML hyperlinks so that the special characters and white spaces are escaped and append session id to the URL. It behaves similar to URLEncoder encode method with additional process to append jsessionid parameter at the end of the URL.
 
-=== What are the Data Types supported by Java ? What is Autoboxing and Unboxing ?
+However HttpServletResponse encodeRedirectUrl() method is used specially for encode the redirect URL in response.
 
-The eight primitive data types supported by the Java programming language are:
+So when we are providing URL rewriting support, for hyperlinks in HTML response, we should use encodeURL() method whereas for redirect URL we should use encodeRedirectUrl() method.
 
-*   byte
-*   short
-*   int
-*   long
-*   float
-*   double
-*   boolean
-*   char
 
-``Autoboxing`` is the http://www.javacodegeeks.com/2013/07/java-generics-tutorial-example-class-interface-methods-wildcards-and-much-more.html[automatic conversion made by the Java compiler] between the primitive types and their corresponding object wrapper classes. For example, the compiler converts an int to an ``http://docs.oracle.com/javase/7/docs/api/java/lang/Integer.html?is-external=true[Integer]``, a double to a ``http://docs.oracle.com/javase/7/docs/api/java/lang/Double.html[Double]``, and so on. If the conversion goes the other way, this operation is called ``unboxing``.
+=== What is meant by a Web Application ? 
 
+A Web application is a dynamic extension of a Web or application server. There are two types of web applications: presentation-oriented and service-oriented. A presentation-oriented Web application generates interactive web pages, which contain various types of markup language and dynamic content in response to requests. On the other hand, a service-oriented web application implements the endpoint of a web service. In general, a Web application can be seen as a collection of servlets installed under a specific subset of the server’s URL namespace.
 
-=== What is Function Overriding and Overloading in Java ?
 
-Method overloading in Java occurs when two or more methods in the same class have the exact same name, but different parameters. On the other hand, method overriding is defined as the case when a child class redefines the same method as a parent class. Overridden methods must have the same name, argument list, and return type. The overriding method may not limit the access of the method it overrides.
+=== What is a Server Side Include (SSI) ? 
 
+Server Side Includes (SSI) is a simple interpreted server-side scripting language, used almost exclusively for the Web, and is embedded with a servlet tag. The most frequent use of SSI is to include the contents of one or more files into a Web page on a Web server. When a Web page is accessed by a browser, the Web server replaces the servlet tag in that Web page with the hyper text generated by the corresponding servlet.
 
-=== What is Abstract class?  
 
-These classes cannot be instantiated and are either partially implemented or not at all implemented. This class contains one or more abstract methods which are simply method declarations without a body.  
+=== What is the structure of the HTTP response ? 
 
-=== When Abstract methods are used?  
+The HTTP response consists of three parts:
 
-If you want a class to contain a particular method but you want the actual implementation of that method to be determined by child classes, you can declare the method in the parent class as abstract.  
+*   **Status Code**: describes the status of the response. It can be used to check if the request has been successfully completed. In case the request failed, the status code can be used to find out the reason behind the failure. If your servlet does not return a status code, the success status code, HttpServletResponse.SC_OK, is returned by default.
+*   **HTTP Headers**: they contain more information about the response. For example, the headers may specify the date/time after which the response is considered stale, or the form of encoding used to safely transfer the entity to the user. See http://examples.javacodegeeks.com/enterprise-java/servlet/get-all-request-headers-in-servlet/[how to retrieve headers in Servlet here].
+*   **Body**: it contains the content of the response. The body may contain HTML code, an image, etc. The body consists of the data bytes transmitted in an HTTP transaction message immediately following the headers.
 
-=== What is an Interface?  
 
-An interface is a collection of abstract methods. A class implements an interface, thereby inheriting the abstract methods of the interface.  
+=== What is a cookie ? What is the difference between session and cookie ?
 
-Give some features of Interface?  
+http://examples.javacodegeeks.com/core-java/net/urlconnection/get-cookies-from-http-connection/[A cookie] is a bit of information that the Web server sends to the browser. The browser stores the cookies for each Web server in a local file. In a future request, the browser, along with the request, sends all stored cookies for that specific Web server.The differences between session and a cookie are the following:
 
-It includes −
+*   The session should work, regardless of the settings on the client browser. The client may have chosen to disable cookies. However, the sessions still work, as the client has no ability to disable them in the server side.
+*   The session and cookies also differ in the amount of information the can store. The HTTP session is capable of storing any Java object, while a cookie can only store String objects.
 
-*   Interface cannot be instantiated
-*   An interface does not contain any constructors.
-*   All of the methods in an interface are abstract.
 
+=== What is HTTP Tunneling ? 
 
-=== **What is the difference between an Interface and an Abstract class ?**
+HTTP Tunneling is a technique by which, communications performed using various network protocols are encapsulated using the HTTP or HTTPS protocols. The HTTP protocol therefore acts as a wrapper for a channel that the network protocol being tunneled uses to communicate. The masking of other protocol requests as HTTP requests is HTTP Tunneling.
 
-Java provides and supports the creation both of http://examples.javacodegeeks.com/java-basics/java-abstract-class-example/[abstract classes] and interfaces. Both implementations share some common characteristics, but they differ in the following features:
 
-*   All methods in an interface are implicitly abstract. On the other hand, an abstract class may contain both abstract and non-abstract methods.
-*   A class may implement a number of Interfaces, but can extend only one abstract class.
-*   In order for a class to implement an interface, it must implement all its declared methods. However, a class may not implement all declared methods of an abstract class. Though, in this case, the sub-class must also be declared as abstract.
-*   Abstract classes can implement interfaces without even providing the implementation of interface methods.
-*   Variables declared in a Java interface is by default final. An abstract class may contain non-final variables.
-*   Members of a Java interface are public by default. A member of an abstract class can either be private, protected or public.
-*   An interface is absolutely abstract and cannot be instantiated. An abstract class also cannot be instantiated, but can be invoked if it contains a main method.
 
-===  What are pass by reference and pass by value ?
 
-When an object is passed by value, this means that a copy of the object is passed. Thus, even if changes are made to that object, it doesn’t affect the original value. When an object is passed by reference, this means that the actual object is not passed, rather a reference of the object is passed. Thus, any changes made by the external method, are also reflected in all places.
 
 
-=== What do you mean by Object? 
 
-_Object_ is a runtime entity and it’s state is stored in fields and behavior is shown via methods. Methods operate on an object's internal state and serve as the primary mechanism for object-to-object communication.  
-Define class?  
-A class is a blue print from which individual objects are created. A class can contain fields and methods to describe the behavior of an object.  
-What kind of variables a class can consist of?  
-A class consist of Local variable, instance variables and class variables.  
 
-=== What is a Local Variable?  
 
-Variables defined inside methods, constructors or blocks are called local variables. The variable will be declared and initialized within the method and it will be destroyed when the method has completed.  
 
-=== What is a Instance Variable?
 
-Instance variables are variables within a class but outside any method. These variables are instantiated when the class is loaded.  
 
-=== What is a Class Variable?  
 
-These are variables declared with in a class, outside any method, with the static keyword.  
 
-=== What is Singleton class?  
 
-Singleton class control object creation, limiting the number to one but allowing the flexibility to create more objects if the situation changes.  
 
-=== What do you mean by Constructor?  
 
-Constructor gets invoked when a new object is created.Every class has a constructor.If we do not explicitly write a constructor for a class the java compiler builds a default constructor for that class.  
 
-List the three steps for creating an Object for a class?  
 
-*   first declared
-*   instantiated
-*   initialized  
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-=== What do you mean by Access Modifier?  
+== Servlet
 
-Java provides access modifiers to set access levels for classes, variables, methods and constructors. A member has package or default accessibility when no accessibility modifier is specified.  
 
-=== What is protected access modifier?  
+=== What is a servlet?
 
-Variables, methods and constructors which are declared protected in a superclass can be accessed only by the subclasses in other package or any class within the package of the protected members' class.  
+http://examples.javacodegeeks.com/enterprise-java/servlet/sample-java-servlet/[The servlet] is a Java programming language class used to process client requests and generate dynamic web content. Servlets are mostly used to process or store data submitted by an HTML form, provide dynamic content and manage state information that does not exist in the stateless HTTP protocol.
 
-=== What do you mean by synchronized "Non Access Modifier"? 
+Java Servlet is server side technologies to extend the capability of web servers by providing support for dynamic response and data persistence.
 
-Java provides these modifiers for providing functionalities other than Access Modifiers, synchronized used to indicate that a method can be accessed by only one thread at a time.  
+The javax.servlet and javax.servlet.http packages provide interfaces and classes for writing our own servlets.  
 
-=== Variables used in a switch statement can be used with which datatypes? 
+All servlets must implement the javax.servlet.Servlet interface, which defines servlet lifecycle methods. When implementing a generic service, we can extend the GenericServlet class provided with the Java Servlet API. The HttpServlet class provides methods, such as doGet() and doPost(), for handling HTTP-specific services.
 
-Variables used in a switch statement can only be a :
+Most of the times, web applications are accessed using HTTP protocol and thats why we mostly extend HttpServlet class. Servlet API hierarchy is shown in below image.
 
-- byte
-- short 
-- int 
-- char  
+image::../images/Servlet-Hierarchy.png[]
 
-'''
 
-=== What is finalize() method?  
-It is possible to define a method that will be called just before an object's final destruction by the garbage collector. This method is called finalize( ), and it can be used to ensure that an object terminates cleanly.  
+=== Explain the architechure of a Servlet. 
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+The core abstraction that must be implemented by all servlets is the `javax.servlet.Servlet` interface. Each servlet must implement it either directly or indirectly, either by extending `javax.servlet.GenericServlet` or `javax.servlet.http.HTTPServlet`. Finally, each servlet is able to serve multiple requests in parallel using multithreading.
 
-=== When super keyword is used?  
-If the method overrides one of its superclass's methods, overridden method can be invoked through the use of the keyword super. It can be also used to refer to a hidden field.  
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+=== What is Servlet Chaining ? 
 
-=== Define Packages in Java?  
-A Package can be defined as a grouping of related types(classes, interfaces, enumerations and annotations ) providing access protection and name space management.  
-Why Packages are used?  
-Packages are used in Java in-order to prevent naming conflicts, to control access, to make searching/locating and usage of classes, interfaces, enumerations and annotations, etc., easier.  
+Servlet Chaining is the method where the output of one servlet is sent to a second servlet. The output of the second servlet can be sent to a third servlet, and so on. The last servlet in the chain is responsible for sending the response to the client.
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-=== Explain garbage collection in Java?  
-It uses garbage collection to free the memory. By cleaning those objects that is no longer reference by any of the program.  
+=== What are important features of Servlet 3?
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Servlet Specs 3.0 was a major release and some of the important features are:
 
-=== Explain the usage of this() with constructors?  
-It is used with variables or methods and used to call constructer of same class.
+1.  **Servlet Annotations**: Prior to Servlet 3, all the servlet mapping and it’s init parameters were used to defined in web.xml, this was not convenient and more error prone when number of servlets are huge in an application.
+Servlet 3 introduced use of java annotations to define a servlet, filter and listener servlets and init parameters. Some of the important Servlet API annotations are WebServlet, WebInitParam, WebFilter and WebListener. Read more about them at http://www.journaldev.com/1877/java-servlet-tutorial-with-examples-for-beginners#servlet-3-annotations[Servlet 3 annotations].
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+2.  **Web Fragments**: Prior to servlet specs 3.0, all the web application configurations are required to be present in the web.xml that makes it cluttered with lot of elements and chances of error increases. So servlet 3 specs introduced web fragments where we can have multiple modules in a single web application, all these modules should have web-fragment.xml file in META-INF directory. We can include all the elements of web.xml inside the web-fragment.xml too. This helps us in dividing our web application into separate modules that are included as JAR file in the web application lib directory.
+3.  **Adding Web Components dynamically**: We can use ServletContext object to add servlets, filters and listeners programmatically. This helps us in building dynamic system where we are loading a component only if we need it. These methods are addServlet(), addFilter() and addListener() defined in the servlet context object.
+4.  **Asynchronous Processing**: Asynchronous support was added to delegate the request processing to another thread rather than keeping the servlet thread busy. It can increase the throughput performance of the application. This is an advance topic and I recommend to read http://www.journaldev.com/2008/async-servlet-feature-of-servlet-3[**Async Servlet**]tutorial.
 
-=== What is Comparable Interface?  
-It is used to sort collections and arrays of objects using the collections.sort() and java.utils. The objects of the class implementing the Comparable interface can be ordered.  
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+=== What are common tasks performed by Servlet Container?
 
-=== Difference between throw and throws?  
+Servlet containers are also known as web container, for example Tomcat. Some of the important tasks of servlet container are:
 
-It includes:
+*   **Communication Support**: Servlet Container provides easy way of communication between web client (Browsers) and the servlets and JSPs. Because of container, we don’t need to build a server socket to listen for any request from web client, parse the request and generate response. All these important and complex tasks are done by container and all we need to focus is on business logic for the applications.
+*   **Lifecycle and Resource Management**: Servlet Container takes care of managing the life cycle of servlet. From the loading of servlets into memory, initializing servlets, invoking servlet methods and to destroy them. Container also provides utility like JNDI for resource pooling and management.
+*   **Multithreading Support**: Container creates new thread for every request to the servlet and provide them request and response objects to process. So servlets are not initialized for each request and saves time and memory.
+*   **JSP Support**: JSPs doesn’t look like normal java classes but every JSP in the application is compiled by container and converted to Servlet and then container manages them like other servlets.
+*   **Miscellaneous Task**: Servlet container manages the resource pool, perform memory optimizations, execute garbage collector, provides security configurations, support for multiple applications, hot deployment and several other tasks behind the scene that makes a developer life easier.
 
-*   Throw is used to trigger an exception where as throws is used in declaration of exception.
-*   Without throws, Checked exception cannot be handled where as checked exception can be propagated with throws.
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-=== Explain the following line used under Java Program −public static void main (String args[ ])  
+=== What is ServletConfig object?
 
-The following shows the explanation individually −
+``javax.servlet.ServletConfig`` is used to pass configuration information to Servlet. Every servlet has it’s own **ServletConfig** object and servlet container is responsible for instantiating this object. We can provide servlet init parameters in web.xml file or through use of WebInitParam annotation. We can use getServletConfig() method to get the ServletConfig object of the servlet.
 
-*   public − it is the access specifier.
-*   static − it allows main() to be called without instantiating a particular instance of a class.
-*   void − it affirns the compiler that no value is returned by main().
-*   main() − this method is called at the beginning of a Java program.
-*   String args[ ] − args parameter is an instance array of class String
+=== What is ServletContext object?
 
-'''
-  
-=== Define JRE i.e. Java Runtime Environment?  
+``javax.servlet.ServletContext`` interface provides access to web application parameters to the servlet. The ServletContext is unique object and available to all the servlets in the web application. When we want some init parameters to be available to multiple or all of the servlets in the web application, we can use ServletContext object and define parameters in web.xml using <context-param> element. We can get the ServletContext object via the __getServletContext()__ method of ServletConfig. Servlet containers may also provide context objects that are unique to a group of servlets and which is tied to a specific portion of the URL path namespace of the host.
 
-Java Runtime Environment is an implementation of the Java Virtual Machine which executes Java programs. It provides the minimum requirements for executing a Java application;  
+ServletContext is enhanced in Servlet Specs 3 to introduce methods through which we can programmatically add Listeners and Filters and Servlet to the application. It also provides some utility methods such as __getMimeType()__, __getResourceAsStream()__ etc.
 
-=== What is JAR file?  
+=== What is difference between ServletConfig and ServletContext?
 
-JAR files is Java Archive fles and it aggregates many files into one. It holds Java classes in a library. JAR files are built on ZIP file format and have .jar file extension.  
-=== What is a WAR file?  
+Some of the differences between ServletConfig and ServletContext are:
 
-This is Web Archive File and used to store XML, java classes, and JavaServer pages. which is used to distribute a collection of JavaServer Pages, Java Servlets, Java classes, XML files, static Web pages etc.  
-=== Define JIT compiler?  
+*   ServletConfig is a unique object per servlet whereas ServletContext is a unique object for complete application.
+*   ServletConfig is used to provide init parameters to the servlet whereas ServletContext is used to provide application level init parameters that all other servlets can use.
+*   We can’t set attributes in ServletConfig object whereas we can set attributes in ServletContext that other servlets can use in their implementation.
 
-It improves the runtime performance of computer programs based on bytecode.  
+=== What is Request Dispatcher?
 
-=== What is the difference between object oriented programming language and object based programming language?  
+RequestDispatcher interface is used to forward the request to another resource that can be HTML, JSP or another servlet in same application. We can also use this to include the content of another resource to the response. This interface is used for inter-servlet communication in the same context.
 
-Object based programming languages follow all the features of OOPs except Inheritance. JavaScript is an example of object based programming languages.  
+There are two methods defined in this interface:
 
-=== What is the purpose of default constructor?  
+1.  void forward(ServletRequest request, ServletResponse response) – forwards the request from a servlet to another resource (servlet, JSP file, or HTML file) on the server.
+2.  void include(ServletRequest request, ServletResponse response) – includes the content of a resource (servlet, JSP page, HTML file) in the response.
+We can get RequestDispatcher in a servlet using ServletContext getRequestDispatcher(String path) method. The path must begin with a / and is interpreted as relative to the current context root.
 
-The java compiler creates a default constructor only if there is no constructor in the class.  
+=== What is difference between PrintWriter and ServletOutputStream?
 
-=== Can a constructor be made final?  
+PrintWriter is a character-stream class whereas ServletOutputStream is a byte-stream class. We can use PrintWriter to write character based information such as character array and String to the response whereas we can use ServletOutputStream to write byte array data to the response.
 
-No, this is not possible.  
+We can use ServletResponse getWriter() to get the PrintWriter instance whereas we can use ServletResponse getOutputStream() method to get the ServletOutputStream object reference.
 
-=== What is static block?  
+You can read more about IO in java at http://www.journaldev.com/942/java-io-tutorial[**Java IO Tutorial**].
 
-It is used to initialize the static data member, It is excuted before main method at the time of classloading.  
+=== Can we get PrintWriter and ServletOutputStream both in a servlet?
 
-=== Define composition?  
+We can’t get instances of both PrintWriter and ServletOutputStream in a single servlet method, if we invoke both the methods; getWriter() and getOutputStream() on response; we will get``java.lang.IllegalStateException`` at runtime with message as other method has already been called for this response.
 
-Holding the reference of the other class within some other class is known as composition.  
+=== How can we create deadlock situation in servlet?
 
-=== What is function overloading?  
+We can create deadlock in servlet by making a loop of method invocation, just call doPost() method from doGet() method and doGet() method to doPost() method to create deadlock situation in servlet.
 
-If a class has multiple functions by same name but different parameters, it is known as Method Overloading.  
+Read more about deadlock in multithreading at http://www.journaldev.com/1058/java-deadlock-example-and-how-to-analyze-deadlock-situation[**Java Deadlock Example**].
 
-=== What is function overriding?  
+=== What is the use of servlet wrapper classes?
 
-If a subclass provides a specific implementation of a method that is already provided by its parent class, it is known as Method Overriding.  
+Servlet HTTP API provides two wrapper classes – ``HttpServletRequestWrapper`` and``HttpServletResponseWrapper``. These wrapper classes are provided to help developers with custom implementation of servlet request and response types. We can extend these classes and override only specific methods we need to implement for custom request and response objects. These classes are not used in normal servlet programming.
 
-=== Difference between Overloading and Overriding?  
+=== What is SingleThreadModel interface?
 
-Method overloading increases the readability of the program. Method overriding provides the specific implementation of the method that is already provided by its super class parameter must be different in case of overloading, parameter must be same in case of overriding.  
+SingleThreadModel interface was provided for thread safety and it guarantees that no two threads will execute concurrently in the servlet’s service method. However SingleThreadModel does not solve all thread safety issues. For example, session attributes and static variables can still be accessed by multiple requests on multiple threads at the same time, even when SingleThreadModel servlets are used. Also it takes out all the benefits of multithreading support of servlets, thats why this interface is Deprecated in Servlet 2.4.
 
-=== What is final class?  
+=== Do we need to override service() method?
 
-Final classes are created so the methods implemented by that class cannot be overridden. It can’t be inherited.  
+When servlet container receives client request, it invokes the service() method which in turn invokes the doGet(), doPost() methods based on the HTTP method of request. I don’t see any use case where we would like to override service() method. The whole purpose of service() method is to forward to request to corresponding HTTP method implementations. If we have to do some pre-processing of request, we can always use servlet filters and listeners.
 
-=== What is NullPointerException?  
+=== Is it good idea to create servlet constructor?
 
-A NullPointerException is thrown when calling the instance method of a null object, accessing or modifying the field of a null object etc.  
-=== What are the ways in which a thread can enter the waiting state?  
-A thread can enter the waiting state by invoking its sleep() method, by blocking on IO, by unsuccessfully attempting to acquire an object's lock, or by invoking an object's wait() method. It can also enter the waiting state by invoking its (deprecated) suspend() method.  
+We can define a constructor for servlet but I don’t think its of any use because we won’t be having access to the ServletConfig object until unless servlet is initialized by container. Ideally if we have to initialize any resource for servlet, we should override init() method where we can access servlet init parameters using ServletConfig object.
 
-=== How does multi-threading take place on a computer with a single CPU?  
+=== What is difference between GenericServlet and HttpServlet?
 
-The operating system's task scheduler allocates execution time to multiple tasks. By quickly switching between executing tasks, it creates the impression that tasks execute sequentially.  
+GenericServlet is protocol independent implementation of Servlet interface whereas HttpServlet is HTTP protocol specific implementation. Most of the times we use servlet for creating web application and that’s why we extend HttpServlet class. HttpServlet class extends GenericServlet and also provide some other methods specific to HTTP protocol.
 
-=== What invokes a thread's run() method?  
+GenericServlet is a generalized and protocol-independent servlet that implements the Servlet and ServletConfig interfaces. Those servlets extending the GenericServlet class shall override the service method. Finally, in order to develop an HTTP servlet for use on the Web that serves requests using the HTTP protocol, your servlet must extend the HttpServlet instead. Check http://examples.javacodegeeks.com/tag/servlet/[Servlet examples here].
 
-After a thread is started, via its start() method of the Thread class, the JVM invokes the thread's run() method when the thread is initially executed.  
 
-=== Does it matter in what order catch statements for FileNotFoundException and IOException are written?  
+=== What is the inter-servlet communication?
 
-Yes, it does. The FileNoFoundException is inherited from the IOException. Exception's subclasses have to be caught first.  
+When we want to invoke another servlet from a servlet service methods, we use inter-servlet communication mechanisms. We can invoke another servlet using RequestDispatcher forward() and include() methods and provide additional attributes in request for other servlet use.
 
-=== What is the difference between yielding and sleeping?  
+=== Are Servlets Thread Safe? How to achieve thread safety in servlets?
 
-When a task invokes its yield() method, it returns to the ready state. When a task invokes its sleep() method, it returns to the waiting state.  
+HttpServlet init() method and destroy() method are called only once in servlet life cycle, so we don’t need to worry about their synchronization. But service methods such as doGet() or doPost() are getting called in every client request and since servlet uses multithreading, we should provide thread safety in these methods.
 
-=== Why Vector class is used?  
+If there are any local variables in service methods, we don’t need to worry about their thread safety because they are specific to each thread but if we have a shared resource then we can use synchronization to achieve thread safety in servlets when working with shared resources.
 
-The Vector class provides the capability to implement a growable array of objects. Vector proves to be very useful if you don't know the size of the array in advance, or you just need one that can change sizes over the lifetime of a program.  
+The thread safety mechanisms are similar to thread safety in standalone java application, read more about them at http://www.journaldev.com/1061/java-synchronization-and-thread-safety-tutorial-with-examples[**Thread Safety in Java**].
 
-=== What are Wrapper classes?  
+=== What is servlet attributes and their scope?
 
-These are classes that allow primitive types to be accessed as objects. Example: Integer, Character, Double, Boolean etc.  
-The Frame class extends Window to define a main application window that can have a menu bar.  
+Servlet attributes are used for inter-servlet communication, we can set, get and remove attributes in web application. There are three scopes for servlet attributes – request scope, session scope and application scope.
 
-=== Which package has light weight components?  
+ServletRequest, HttpSession and ServletContext interfaces provide methods to get/set/remove attributes from request, session and application scope respectively.
 
-`javax.Swing` package. All components in Swing, except JApplet, JDialog, JFrame and JWindow are lightweight components.  
-What is the difference between the paint() and repaint() methods?  
-The paint() method supports painting via a Graphics object. The repaint() method is used to cause paint() to be invoked by the AWT painting thread.
+Servlet attributes are different from init parameters defined in web.xml for ServletConfig or ServletContext.
 
-=== What is the purpose of File class?  
+=== How do we call one servlet from another servlet?
 
-It is used to create objects that provide access to the files and directories of a local file system.  
+We can use RequestDispatcher forward() method to forward the processing of a request to another servlet. If we want to include the another servlet output to the response, we can use RequestDispatcher include() method.
 
-=== What is the difference between the Reader/Writer class hierarchy and the InputStream/OutputStream class hierarchy?  
+=== How can we invoke another servlet in a different application?
 
-The Reader/Writer class hierarchy is character-oriented, and the InputStream/OutputStream class hierarchy is byte-oriented.  
+We can’t use RequestDispatcher to invoke servlet from another application because it’s specific for the application. If we have to forward the request to a resource in another application, we can use ServletResponse sendRedirect() method and provide complete URL of another servlet. This sends the response to client with response code as 302 to forward the request to another URL. If we have to send some data also, we can use cookies that will be part of the servlet response and sent in the request to another servlet.
 
-=== Which class should you use to obtain design information about an object?  
+=== What is difference between ServletResponse sendRedirect() and RequestDispatcher forward() method?
 
-The Class class is used to obtain information about an object's design and java.lang.Class class instance represent classes, interfaces in a running Java application.  
+1.  RequestDispatcher forward() is used to forward the same request to another resource whereas ServletResponse sendRedirect() is a two step process. In sendRedirect(), web application returns the response to client with status code 302 (redirect) with URL to send the request. The request sent is a completely new request.
+2.  forward() is handled internally by the container whereas sednRedirect() is handled by browser.
+3.  We should use forward() when accessing resources in the same application because it’s faster than sendRedirect() method that required an extra network call.
+4.  In forward() browser is unaware of the actual processing resource and the URL in address bar remains same whereas in sendRedirect() URL in address bar change to the forwarded resource.
+5.  forward() can’t be used to invoke a servlet in another context, we can only use sendRedirect() in this case.
 
-=== What is the difference between static and non-static variables?  
 
-A static variable is associated with the class as a whole rather than with specific instances of a class. Non-static variables take on unique values with each object instance.  
+=== Why HttpServlet class is declared abstract?
 
-=== What is Serialization and deserialization?  
+HttpServlet class provide HTTP protocol implementation of servlet but it’s left abstract because there is no implementation logic in service methods such as doGet() and doPost() and we should override at least one of the service methods. That’s why there is no point in having an instance of HttpServlet and is declared abstract class.
 
-Serialization is the process of writing the state of an object to a byte stream. Deserialization is the process of restoring these objects.  
+Read more about http://www.journaldev.com/1582/abstract-class-in-java-with-example[**abstract class**].
 
-=== What are use cases?  
 
-It is part of the analysis of a program and describes a situation that a program might encounter and what behavior the program should exhibit in that circumstance.  
+=== What are the phases of servlet life cycle?
 
-=== Explain the use of sublass in a Java program?  
+We know that Servlet Container manages the life cycle of Servlet, there are four phases of servlet life cycle.
 
-Sub class inherits all the public and protected methods and the implementation. It also inherits all the default modifier methods and their implementation.  
+1.  Servlet Class Loading – When container receives request for a servlet, it first loads the class into memory and calls it’s default no-args constructor.
+2.  Servlet Class Initialization – Once the servlet class is loaded, container initializes the ServletContext object for the servlet and then invoke it’s init method by passing servlet config object. This is the place where a servlet class transforms from normal class to servlet.
+3.  Request Handling – Once servlet is initialized, its ready to handle the client requests. For every client request, servlet container spawns a new thread and invokes the service() method by passing the request and response object reference.
+4.  Removal from Service – When container stops or we stop the application, servlet container destroys the servlet class by invoking it’s destroy() method.
 
-=== How to add menushortcut to menu item?  
+On every client’s request, the Servlet Engine loads the servlets and invokes its init methods, in order for the servlet to be initialized. Then, the Servlet object handles all subsequent requests coming from that client, by invoking the service method for each request separately. Finally, the servlet is removed by calling the server’s destroy method.
 
-If there is a button instance called b1, you may add menu short cut by calling b1.setMnemonic('F'), so the user may be able to use Alt+F to click the button.
 
-=== Can you write a Java class that could be used both as an applet as well as an application?  
+=== What are life cycle methods of a servlet?
 
-Yes, just add a main() method to the applet.  
+Servlet Life Cycle consists of three methods:
 
-=== What's the difference between constructors and other methods?  
+1.  public void init(ServletConfig config) – This method is used by container to initialize the servlet, this method is invoked only once in the lifecycle of servlet.
+2.  public void service(ServletRequest request, ServletResponse response) – This method is called once for every request, container can’t invoke service() method until unless init() method is executed.
+3.  public void destroy() – This method is invoked once when servlet is unloaded from memory.
 
-Constructors must have the same name as the class and can not return a value. They are only called once while regular methods could be called many times.  
 
-=== Is there any limitation of using Inheritance?  
+=== What is the difference between doGet() and doPost() ? 
 
-Yes, since inheritance inherits everything from the super class and interface, it may make the subclass too clustering and sometimes error-prone when dynamic overriding or dynamic overloading in some situation.  
+``doGET``: The GET method appends the name-value pairs on the request’s URL. Thus, there is a limit on the number of characters and subsequently on the number of values that can be used in a client’s request. Furthermore, the values of the request are made visible and thus, sensitive information must not be passed in that way. ``doPOST``: The POST method overcomes the limit imposed by the GET request, by sending the values of the request inside its body. Also, there is no limitations on the number of values to be sent across. Finally, the sensitive information passed through a POST request is not visible to an external client.
 
-=== When is the ArrayStoreException thrown?  
 
-When copying elements between different arrays, if the source or destination arguments are not arrays or their types are not compatible, an ArrayStoreException will be thrown.  
+=== Why we should override only no-agrs init() method.
 
-=== Can you call one constructor from another if a class has multiple constructors?  
+If we have to initialize some resource before we want our servlet to process client requests, we should override init() method. If we override init(ServletConfig config) method, then the first statement should be super(config) to make sure superclass init(ServletConfig config) method is invoked first. That’s why GenericServlet provides another helper init() method without argument that get’s called at the end of init(ServletConfig config) method. We should always utilize this method for overriding init() method to avoid any issues as we may forget to add super() call in overriding init method with ServletConfig argument.
 
-Yes, use this() syntax.  
 
-=== What's the difference between the methods sleep() and wait()?  
+=== What are different methods of session management in servlets?
 
-The code sleep(2000); puts thread aside for exactly two seconds. The code wait(2000), causes a wait of up to two second. A thread could stop waiting earlier if it receives the notify() or notifyAll() call. The method wait() is defined in the class Object and the method sleep() is defined in the class Thread.  
+Session is a conversional state between client and server and it can consists of multiple request and response between client and server. Since HTTP and Web Server both are stateless, the only way to maintain a session is when some unique information about the session (session id) is passed between server and client in every request and response.
 
-=== When ArithmeticException is thrown?  
+Some of the common ways of session management in servlets are:
 
-The ArithmeticException is thrown when integer is divided by zero or taking the remainder of a number by zero. It is never thrown in floating-point operations.  
+1.  User Authentication
+2.  HTML Hidden Field
+3.  Cookies
+4.  URL Rewriting
+5.  Session Management API
+Read more about these session management approaches in detail at http://www.journaldev.com/1907/java-servlet-session-management-tutorial-with-examples-of-cookies-httpsession-and-url-rewriting[**Servlet Session Management Tutorial**].
 
-=== What is a transient variable?  
 
-A transient variable is a variable that may not be serialized during Serialization and which is initialized by its default value during de-serialization,  
+=== What is URL Rewriting?
 
-=== What is synchronization?  
+We can use HttpSession for session management in servlets but it works with Cookies and we can disable the cookie in client browser. Servlet API provides support for URL rewriting that we can use to manage session in this case.
 
-Synchronization is the capability to control the access of multiple threads to shared resources. synchronized keyword in java provides locking which ensures mutual exclusive access of shared resource and prevent data race.  
+The best part is that from coding point of view, it’s very easy to use and involves one step – encoding the URL. Another good thing with Servlet URL Encoding is that it’s a fallback approach and it kicks in only if browser cookies are disabled.
 
-=== What is the Collections API?  
+We can encode URL with HttpServletResponse encodeURL() method and if we have to redirect the request to another resource and we want to provide session information, we can use encodeRedirectURL() method.
 
-The Collections API is a set of classes and interfaces that support operations on collections of objects.  
+Read More at http://www.journaldev.com/1907/java-servlet-session-management-tutorial-with-examples-of-cookies-httpsession-and-url-rewriting#servlet-url-rewriting[**Servlet URL Rewriting**].
 
-=== Does garbage collection guarantee that a program will not run out of memory?  
 
-Garbage collection does not guarantee that a program will not run out of memory. It is possible for programs to use up memory resources faster than they are garbage collected. It is also possible for programs to create objects that are not subject to garbage collection.  
+=== How does Cookies work in Servlets?
 
-=== The immediate superclass of the Applet class?  
+Cookies are used a lot in web client-server communication, it’s not something specific to java. Cookies are text data sent by server to the client and it gets saved at the client local machine.
 
-Panel is the immediate superclass. A panel provides space in which an application can attach any other component, including other panels.  
+Servlet API provides cookies support through javax.servlet.http.Cookie class that implements Serializable and Cloneable interfaces.
 
-=== Which Java operator is right associative?  
+HttpServletRequest getCookies() method is provided to get the array of Cookies from request, since there is no point of adding Cookie to request, there are no methods to set or add cookie to request.
 
-The = operator is right associative.  
+Similarly HttpServletResponse addCookie(Cookie c) method is provided to attach cookie in response header, there are no getter methods for cookie.
 
-=== What is the difference between a break statement and a continue statement?  
+Read more at http://www.journaldev.com/1956/servlet-cookie-example-tutorial[**Cookies in Servlets**].
 
-A break statement results in the termination of the statement to which it applies (switch, for, do, or while). A continue statement is used to end the current loop iteration and return control to the loop statement.  
 
-=== If a variable is declared as private, where may the variable be accessed?  
+=== How to notify an object in session when session is invalidated or timed-out?
 
-A private variable may only be accessed within the class in which it is declared.  
+If we have to make sure an object gets notified when session is destroyed, the object should implement ``javax.servlet.http.HttpSessionBindingListener`` interface. This interface defines two callback methods – valueBound() and valueUnbound() that we can define to implement processing logic when the object is added as attribute to the session and when session is destroyed.
 
-=== What is the purpose of the System class?  
+Recommended reading http://www.journaldev.com/1945/servlet-listener-example-servletcontextlistener-httpsessionlistener-and-servletrequestlistener[**Servlet Listener**].
 
-The purpose of the System class is to provide access to system resources.  
 
-=== List primitive Java types?  
+=== Why do we have servlet filters?
 
-The eight primitive types are byte, char, short, int, long, float, double, and boolean.  
+Servlet Filters are pluggable java components that we can use to intercept and process requests before they are sent to servlets and response after servlet code is finished and before container sends the response back to the client.
 
-=== Which class is the immediate superclass of the Container class?       
-Component class is the immediate super class.  
+Some common tasks that we can do with filters are:
 
-=== What class of exceptions are generated by the Java run-time system?  
+*   Logging request parameters to log files.
+*   Authentication and autherization of request for resources.
+*   Formatting of request body or header before sending it to servlet.
+*   Compressing the response data sent to the client.
+*   Alter response by adding some cookies, header information etc.
+Read more about filters at http://www.journaldev.com/1933/java-servlet-filter-example-tutorial[**Servlet Filter**].
 
-The Java runtime system generates RuntimeException and Error exceptions.  
 
-=== Under what conditions is an object's finalize() method invoked by the garbage collector?  
+=== Why do we have servlet listeners?
 
-The garbage collector invokes an object's finalize() method when it detects that the object has become unreachable.  
+We know that using ServletContext, we can create an attribute with application scope that all other servlets can access but we can initialize ServletContext init parameters as String only in deployment descriptor (web.xml). What if our application is database oriented and we want to set an attribute in ServletContext for Database Connection.
 
-=== How can a dead thread be restarted?  
+If you application has a single entry point (user login), then you can do it in the first servlet request but if we have multiple entry points then doing it everywhere will result in a lot of code redundancy. Also if database is down or not configured properly, we won’t know until first client request comes to server. To handle these scenario, servlet API provides Listener interfaces that we can implement and configure to listen to an event and do certain operations.
 
-A dead thread cannot be restarted.  
+Read more about different types of listeners and example at http://www.journaldev.com/1945/servlet-listener-example-servletcontextlistener-httpsessionlistener-and-servletrequestlistener[**Servlet Listener**].
 
-=== Which arithmetic operations can result in the throwing of an ArithmeticException?  
 
-Integer / and % can result in the throwing of an ArithmeticException.  
-=== Variable of the boolean type is automatically initialized as?  
 
-The default value of the boolean type is false.  
+=== What is a deployment descriptor?
 
-=== Can try statements be nested?  
+Deployment descriptor is a configuration file for the web application and it’s name is web.xml and it resides in WEB-INF directory. Servlet container use this file to configure web application servlets, servlet config params, context init params, filters, listeners, welcome pages and error handlers.
 
-Yes  
+With servlet 3.0 annotations, we can remove a lot of clutter from web.xml by configuring servlets, filters and listeners using annotations.
 
-=== What are ClassLoaders?  
 
-A class loader is an object that is responsible for loading classes. The class ClassLoader is an abstract class.  
+=== How to make sure a servlet is loaded at the application startup?
 
-=== What is the difference between an Interface and an Abstract class?  
+Usually servlet container loads a servlet on the first client request but sometimes when the servlet is heavy and takes time to loads, we might want to load it on application startup. We can use load-on-startup element with servlet configuration in web.xml file or use WebServlet annotation loadOnStartup variable to tell container to load the servlet on system startup.
 
-An abstract class can have instance methods that implement a default behavior. An Interface can only declare constants and instance methods, but cannot implement default behavior and all methods are implicitly abstract. An interface has all public members and no implementation.  
-
-=== What will happen if static modifier is removed from the signature of the main method?  
-
-Program throws "NoSuchMethodError" error at runtime.  
-
-=== What is the default value of an object reference declared as an instance variable?  
-
-Null, unless it is defined explicitly.  
-
-=== Can a top level class be private or protected?  
-
-No, a top level class can not be private or protected. It can have either "public" or no modifier.  
-
-=== Why do we need wrapper classes?  
-
-We can pass them around as method parameters where a method expects an object. It also provides utility methods.  
-
-=== What is the difference between error and an exception?  
-
-An error is an irrecoverable condition occurring at runtime. Such as OutOfMemory error. Exceptions are conditions that occur because of bad input etc. e.g. FileNotFoundException will be thrown if the specified file does not exist.  
-
-=== Is it necessary that each try block must be followed by a catch block?  
-
-It is not necessary that each try block must be followed by a catch block. It should be followed by either a catch block or a finally block.  
-
-=== When a thread is created and started, what is its initial state?  
-A thread is in the ready state as initial state after it has been created and started.  
-=== What is the Locale class?  
-The Locale class is used to tailor program output to the conventions of a particular geographic, political, or cultural region.  
-
-=== What are synchronized methods and synchronized statements?  
-Synchronized methods are methods that are used to control access to an object. A synchronized statement can only be executed after a thread has acquired the lock for the object or class referenced in the synchronized statement.  
-=== What is runtime polymorphism or dynamic method dispatch?  
-Runtime polymorphism or dynamic method dispatch is a process in which a call to an overridden method is resolved at runtime rather than at compile-time. In this process, an overridden method is called through the reference variable of a superclass.  
-
-=== What is Dynamic Binding(late binding)?  
-Binding refers to the linking of a procedure call to the code to be executed in response to the call. Dynamic binding means that the code associated with a given procedure call is not known until the time of the call at run-time.  
-=== Can constructor be inherited?  
-No, constructor cannot be inherited.  
-=== What are the advantages of ArrayList over arrays?  
-ArrayList can grow dynamically and provides more powerful insertion and search mechanisms than arrays.  
-
-=== Why deletion in LinkedList is fast than ArrayList?  
-Deletion in linked list is fast because it involves only updating the next pointer in the node before the deleted node and updating the previous pointer in the node after the deleted node.  
-
-=== How do you decide when to use ArrayList and LinkedList?  
-If you need to frequently add and remove elements from the middle of the list and only access the list elements sequentially, then LinkedList should be used. If you need to support random access, without inserting or removing elements from any place other than the end, then ArrayList should be used.  
-=== What is a Values Collection View ?  
-It is a collection returned by the values() method of the Map Interface, It contains all the objects present as values in the map.  
-=== What is dot operator?  
-The dot operator(.) is used to access the instance variables and methods of class objects.It is also used to access classes and sub-packages from a package.  
-=== Where and how can you use a private constructor?  
-Private constructor is used if you do not want other classes to instantiate the object and to prevent subclassing.T  
-
-=== What is type casting?  
-Type casting means treating a variable of one type as though it is another type.  
-=== Describe life cycle of thread?  
-
-A thread is a execution in a program. The life cycle of a thread include −
-
-*   Newborn stateRunnable stateRunning stateBlocked stateDead state  
-
-=== What is the difference between the >> and >>> operators?  
-The >> operator carries the sign bit when shifting right. The >>> zero-fills bits that have been shifted out.  
-
-=== Which method of the Component class is used to set the position and size of a component?  
-setBounds() method is used for this purpose.  
-=== What is the range of the short type?  
-The range of the short type is -(2^15) to 2^15 - 1.  
-=== What is the immediate superclass of Menu?  
-MenuItem class  
-
-=== Does Java allow Default Arguments?  
-No, Java does not allow Default Arguments.  
-=== Which number is denoted by leading zero in java?  
-Octal Numbers are denoted by leading zero in java, example: 06  
-
-=== Why Generics are used in Java?  
-Generics provide compile-time type safety that allows programmers to catch invalid types at compile time. Java Generic methods and generic classes enable programmers to specify, with a single method declaration, a set of related methods or, with a single class declaration, a set of related types.  
-
-=== What is an enumeration?  
-An enumeration is an interface containing methods for accessing the underlying data structure from which the enumeration is obtained. It allows sequential access to all the elements stored in the collection.
-
-
-=== What are the important features of Java 8 release?
-
-Java 8 has been released in March 2014, so it’s one of the hot topic in java interview questions. If you answer this question clearly, it will show that you like to keep yourself up-to-date with the latest technologies.
-
-Java 8 has been one of the biggest release after Java 5 annotations and generics. Some of the important features of Java 8 are:
-
-1.  http://www.journaldev.com/2752/java-8-interface-changes-static-methods-default-methods-functional-interfaces[Interface changes with default and static methods]
-2.  http://www.journaldev.com/2763/java-8-lambda-expressions-and-functional-interfaces-example-tutorial[Functional interfaces and Lambda Expressions]
-3.  http://www.journaldev.com/2774/java-8-stream-api-example-tutorial[Java Stream API for collection classes]
-4.  http://www.journaldev.com/2800/java-8-date-time-api-example-tutorial-localdate-instant-localdatetime-parse-and-format[Java Date Time API]
-I strongly recommend to go through above links to get proper understanding of each one of them, also read http://www.journaldev.com/2389/java-8-features-for-developers-lambdas-functional-interface-stream-and-time-api[Java 8 Features].
-
-=== What do you mean by platform independence of Java?
-
-Platform independence means that you can run the same Java Program in any Operating System. For example, you can write java program in Windows and run it in Mac OS.
-
-=== What is JVM and is it platform independent?
-
-Java Virtual Machine (JVM) is the heart of java programming language. JVM is responsible for converting byte code into machine readable code. JVM is not platform independent, thats why you have different JVM for different operating systems. We can customize JVM with Java Options, such as allocating minimum and maximum memory to JVM. It’s called virtual because it provides an interface that doesn’t depend on the underlying OS.
-
-=== What is the difference between JDK and JVM?
-
-Java Development Kit (JDK) is for development purpose and JVM is a part of it to execute the java programs.
-
-JDK provides all the tools, executables and binaries required to compile, debug and execute a Java Program. The execution part is handled by JVM to provide machine independence.
-
-=== What is the difference between JVM and JRE?
-
-Java Runtime Environment (JRE) is the implementation of JVM. JRE consists of JVM and java binaries and other classes to execute any program successfully. JRE doesn’t contain any development tools like java compiler, debugger etc. If you want to execute any java program, you should have JRE installed.
-
-=== Which class is the superclass of all classes?
-
-``java.lang.Object`` is the root class for all the java classes and we don’t need to extend it.
-
-=== Why Java doesn’t support multiple inheritance?
-
-Java doesn’t support multiple inheritance in classes because of “Diamond Problem”. To know more about diamond problem with example, read http://www.journaldev.com/1775/multiple-inheritance-in-java-and-composition-vs-inheritance[Multiple Inheritance in Java].
-
-However multiple inheritance is supported in interfaces. An interface can extend multiple interfaces because they just declare the methods and implementation will be present in the implementing class. So there is no issue of diamond problem with interfaces.
-
-=== Why Java is not pure Object Oriented language?
-
-Java is not said to be pure object oriented because it support primitive types such as int, byte, short, long etc. I believe it brings simplicity to the language while writing our code. Obviously java could have wrapper objects for the primitive types but just for the representation, they would not have provided any benefit.
-
-As we know, for all the primitive types we have wrapper classes such as Integer, Long etc that provides some additional methods.
-
-=== What is difference between path and classpath variables?
-
-PATH is an environment variable used by operating system to locate the executables. That’s why when we install Java or want any executable to be found by OS, we need to add the directory location in the PATH variable. If you work on Windows OS, read this post to learn http://www.journaldev.com/476/java-tutorial-1-setting-up-java-environment-on-windows[how to setup PATH variable on Windows].
-
-Classpath is specific to java and used by java executables to locate class files. We can provide the classpath location while running java application and it can be a directory, ZIP files, JAR files etc.
-
-=== What is the importance of main method in Java?
-
-main() method is the entry point of any standalone java application. The syntax of main method is``public static void main(String args[])``.
-
-main method is public and static so that java can access it without initializing the class. The input parameter is an array of String through which we can pass runtime arguments to the java program. Check this post to learn http://www.journaldev.com/481/java-tutorial-2-writing-and-running-first-java-program[how to compile and run java program].
-
-=== What is overloading and overriding in java?
-
-When we have more than one method with same name in a single class but the arguments are different, then it is called as method overloading.
-
-Overriding concept comes in picture with inheritance when we have two methods with same signature, one in parent class and another in child class. We can use @Override annotation in the child class overridden method to make sure if parent class method is changed, so as child class.
-
-=== Can we overload main method?
-
-Yes, we can have multiple methods with name “main” in a single class. However if we run the class, java runtime environment will look for main method with syntax as ``public static void main(String args[])``.
-
-=== Can we have multiple public classes in a java source file?
-
-We can’t have more than one public class in a single java source file. A single source file can have multiple classes that are not public.
-
-=== What is Java Package and which package is imported by default?
-
-Java package is the mechanism to organize the java classes by grouping them. The grouping logic can be based on functionality or modules based. A java class fully classified name contains package and class name. For example, ``java.lang.Object`` is the fully classified name of ``Object`` class that is part of``java.lang`` package.
-
-``java.lang`` package is imported by default and we don’t need to import any class from this package explicitly.
-
-[sociallocker id=”2713″]  
-
-=== What are access modifiers?
-
-Java provides access control through public, private and protected access modifier keywords. When none of these are used, it’s called default access modifier.  
-
-A java class can only have public or default access modifier. Read http://www.journaldev.com/2345/java-access-modifiers-public-protected-and-private-keywords[Java Access Modifiers] to learn more about these in detail.
-
-=== What is final keyword?
-
-final keyword is used with Class to make sure no other class can extend it, for example String class is final and we can’t extend it.
-
-We can use final keyword with methods to make sure child classes can’t override it.
-
-final keyword can be used with variables to make sure that it can be assigned only once. However the state of the variable can be changed, for example we can assign a final variable to an object only once but the object variables can change later on.
-
-Java interface variables are by default final and static.
-
-=== What is static keyword?
-
-static keyword can be used with class level variables to make it global i.e all the objects will share the same variable.
-
-static keyword can be used with methods also. A static method can access only static variables of class and invoke only static methods of the class.
-
-Read more in detail at http://www.journaldev.com/1365/static-in-java-methods-variables-block-class[java static keyword].
-
-=== What is finally and finalize in java?
-
-finally block is used with try-catch to put the code that you want to get executed always, even if any exception is thrown by the try-catch block. finally block is mostly used to release resources created in the try block.
-
-finalize() is a special method in Object class that we can override in our classes. This method get’s called by garbage collector when the object is getting garbage collected. This method is usually overridden to release system resources when object is garbage collected.
-
-=== Can we declare a class as static?
-
-We can’t declare a top-level class as static however an inner class can be declared as static. If inner class is declared as static, it’s called static nested class.  
-
-Static nested class is same as any other top-level class and is nested for only packaging convenience.
-
-Read more about inner classes at http://www.journaldev.com/996/java-nested-classes-java-inner-class-static-nested-class-local-inner-class-and-anonymous-inner-class[java inner class].
-
-
-
-
-
-=== What is static import?
-
-If we have to use any static variable or method from other class, usually we import the class and then use the method/variable with class name.
-
-[source,java]
+[source,xml]
 ----
-import java.lang.Math;
-
-//inside class
-double test = Math.PI * 5;
+<servlet>
+    <servlet-name>foo</servlet-name>
+    <servlet-class>com.foo.servlets.Foo</servlet-class>
+    <load-on-startup>5</load-on-startup>
+</servlet>
 ----
 
-We can do the same thing by importing the static method or variable only and then use it in the class as if it belongs to it.
+The load-on-startup value should be int, if it’s negative integer then servlet container will load the servlet based on client requests and requirement but if it’s 0 or positive, then container will load it on application startup.
 
-[source,java]
+If there are multiple servlets with load-on-startup value such as 0,1,2,3 then lower integer value servlet will be loaded first.
+
+
+=== How to get the actual path of servlet in server?
+
+We can use following code snippet to get the actual path of the servlet in file system.
+
+``getServletContext().getRealPath(request.getServletPath())``
+
+
+
+
+=== How to get the server information in a servlet?
+
+We can use below code snippet to get the servlet information in a servlet through servlet context object.
+
+``getServletContext().getServerInfo()``
+
+
+=== Write a servlet to upload file on server.
+
+File Upload and Download and common tasks in a java web application. Unfortunately Servlet API doesn’t provide easy methods to upload file on server, so we can use Apache FileUpload jar to make our life easier.
+
+Please read http://www.journaldev.com/1964/servlet-upload-file-and-download-file-example[**File Upload Servlet**] post that provide all the necessary details with example program to upload and download file using servlets.
+
+
+=== How do we go with database connection and log4j integration in servlet?
+
+If you work with database connection a lot in your web application, its best to initialize it in a servlet context listener and set it as a context attribute for other servlets to use.
+
+Integrating Log4j is also very easy in web applications, all we need is a log4j configuration XML or property file and then configure it in a servlet context listener.
+
+For complete example, please look into http://www.journaldev.com/1997/servlet-example-in-java-with-database-connection-and-log4j-integration[**Servlet Database and Log4j Example**].
+
+
+=== How to get the IP address of client in servlet?
+
+We can use ``request.getRemoteAddr()`` to get the client IP address in servlet.
+
+
+=== What are different ways for servlet authentication?
+
+Servlet Container provides different ways of login based servlet authentication:
+
+1.  **HTTP Basic Authentication**
+2.  **HTTP Digest Authentication**
+3.  **HTTPS Authentication**
+4.  **Form Based Login**: A standard HTML form for authentication, advantage is that we can change the login page layout as our application requirements rather than using HTTP built-in login mechanisms.
+
+
+
+=== How can we achieve transport layer security for our web application?
+
+We can configure our servlet container to use SSL for message communication over the network. To configure SSL on Tomcat, we need a digital certificate that can be created using Java keytool for development environment. For production environment, you should get the digital certificate from SSL certificate providers, for example, Verisign or Entrust.
+Read more at http://www.journaldev.com/160/steps-to-configure-ssl-on-tomcat-and-setup-auto-redirect-from-http-to-https[**Configure SSL on Tomcat**] article.
+
+
+
+
+
+=== How to handle exceptions thrown by application with another servlet?
+
+If you notice, doGet() and doPost() methods throw ServletException and IOException. Since browser understand only HTML, when our application throw exception, servlet container processes the exception and generate a HTML response. Same goes with other error codes like 404, 403 etc.
+
+Servlet API provides support for custom Exception and Error Handler servlets that we can configure in deployment descriptor, the whole purpose of these servlets are to handle the Exception or Error raised by application and send HTML response that is useful for the user. We can provide link to application home page or some details to let user know what went wrong.
+
+We can configure them in web.xml like below:
+
+[source,xml]
 ----
-import static java.lang.Math.PI;
-
-//no need to refer class now
-double test = PI * 5;
+<error-page>
+    <error-code>404</error-code>
+    <location>/AppExceptionHandler</location>
+</error-page>
+    
+<error-page>
+    <exception-type>javax.servlet.ServletException</exception-type>
+    <location>/AppExceptionHandler</location>
+</error-page>
 ----
 
-Use of static import can cause confusion, so it’s better to avoid it. Overuse of static import can make your program unreadable and unmaintainable.
 
 
-=== What is multi-catch block in java?
 
-Java 7 one of the improvement was multi-catch block where we can catch multiple exceptions in a single catch block. This makes are code shorter and cleaner when every catch block has similar code.
+=== What is the effective way to make sure all the servlets are accessible only when user has a valid session?
 
-If a catch block handles multiple exception, you can separate them using a pipe (|) and in this case exception parameter (ex) is final, so you can’t change it.
+We know that servlet filters can be used to intercept request between servlet container and servlet, we can utilize it to create authentication filter and check if request contains a valid session or not.
 
-Read more at http://www.journaldev.com/629/catching-multiple-exceptions-in-single-catch-and-rethrowing-exceptions-with-improved-type-checking-java-7-feature[Java multi catch block].
-
-=== What is static block?
-
-Java static block is the group of statements that gets executed when the class is loaded into memory by Java ClassLoader. It is used to initialize static variables of the class. Mostly it’s used to create static resources when class is loaded.
-
-=== What is an interface?
-
-Interfaces are core part of java programming language and used a lot not only in JDK but also java design patterns, most of the frameworks and tools. Interfaces provide a way to achieve abstraction in java and used to define the contract for the subclasses to implement.
-
-Interfaces are good for starting point to define Type and create top level hierarchy in our code. Since a java class can implements multiple interfaces, it’s better to use interfaces as super class in most of the cases. Read more at http://www.journaldev.com/1601/what-is-interface-in-java-example-tutorial[java interface].
-
-=== What is an abstract class?
-
-Abstract classes are used in java to create a class with some default method implementation for subclasses. An abstract class can have abstract method without body and it can have methods with implementation also.
-
-abstract keyword is used to create a abstract class. Abstract classes can’t be instantiated and mostly used to provide base for sub-classes to extend and implement the abstract methods and override or use the implemented methods in abstract class. Read important points about abstract classes at http://www.journaldev.com/1582/abstract-class-in-java-with-example[java abstract class].
-
-=== What is the difference between abstract class and interface?
-
-abstract keyword is used to create abstract class whereas interface is the keyword for interfaces.
-
-Abstract classes can have method implementations whereas interfaces can’t.
-
-A class can extend only one abstract class but it can implement multiple interfaces.
-
-We can run abstract class if it has main() method whereas we can’t run an interface.
-
-Some more differences in detail are at .
-
-=== Can an interface implement or extend another interface?
-
-Interfaces don’t implement another interface, they extend it. Since interfaces can’t have method implementations, there is no issue of diamond problem. That’s why we have multiple inheritance in interfaces i.e an interface can extend multiple interfaces.
-
-=== What is Marker interface?
-
-A marker interface is an empty interface without any method but used to force some functionality in implementing classes by Java. Some of the well known marker interfaces are Serializable and Cloneable.
-
-=== What are Wrapper classes?
-
-Java wrapper classes are the Object representation of eight primitive types in java. All the wrapper classes in java are immutable and final. Java 5 autoboxing and unboxing allows easy conversion between primitive types and their corresponding wrapper classes.
-
-Read more at http://www.journaldev.com/1002/java-wrapper-classes-tutorial-with-examples[Wrapper classes in Java].
-
-=== What is Enum in Java?
-
-Enum was introduced in Java 1.5 as a new type whose fields consists of fixed set of constants. For example, in Java we can create Direction as enum with fixed fields as EAST, WEST, NORTH, SOUTH.
-
-enum is the keyword to create an enum type and similar to class. Enum constants are implicitly static and final. Read more in detail at http://www.journaldev.com/716/java-enum-examples-with-benefits-and-class-usage[java enum].
-
-=== What is Java Annotations?
-
-Java Annotations provide information about the code and they have no direct effect on the code they annotate. Annotations are introduced in Java 5. Annotation is metadata about the program embedded in the program itself. It can be parsed by the annotation parsing tool or by compiler. We can also specify annotation availability to either compile time only or till runtime also. Java Built-in annotations are @Override, @Deprecated and @SuppressWarnings. Read more at http://www.journaldev.com/721/java-annotations-tutorial-with-custom-annotation-example-and-parsing-using-reflection[java annotations].
-
-=== What is Java Reflection API? Why it’s so important to have?
-
-Java Reflection API provides ability to inspect and modify the runtime behavior of java application. We can inspect a java class, interface, enum and get their methods and field details. Reflection API is an advanced topic and we should avoid it in normal programming. Reflection API usage can break the design pattern such as Singleton pattern by invoking the private constructor i.e violating the rules of access modifiers.
-
-Even though we don’t use Reflection API in normal programming, it’s very important to have. We can’t have any frameworks such as Spring, Hibernate or servers such as Tomcat, JBoss without Reflection API. They invoke the appropriate methods and instantiate classes through reflection API and use it a lot for other processing.
-
-Read http://www.journaldev.com/1789/java-reflection-tutorial-for-classes-methods-fields-constructors-annotations-and-much-more[Java Reflection Tutorial] to get in-depth knowledge of reflection api.
-
-=== What is composition in java?
-
-Composition is the design technique to implement has-a relationship in classes. We can use Object composition for code reuse.
-
-Java composition is achieved by using instance variables that refers to other objects. Benefit of using composition is that we can control the visibility of other object to client classes and reuse only what we need. Read more with example at http://www.journaldev.com/1325/what-is-composition-in-java-java-composition-example[Java Composition] example.
-
-=== What is the benefit of Composition over Inheritance?
-
-One of the best practices of java programming is to “favor composition over inheritance”. Some of the possible reasons are:
-
-*   Any change in the superclass might affect subclass even though we might not be using the superclass methods. For example, if we have a method test() in subclass and suddenly somebody introduces a method test() in superclass, we will get compilation errors in subclass. Composition will never face this issue because we are using only what methods we need.
-*   Inheritance exposes all the super class methods and variables to client and if we have no control in designing superclass, it can lead to security holes. Composition allows us to provide restricted access to the methods and hence more secure.
-*   We can get runtime binding in composition where inheritance binds the classes at compile time. So composition provides flexibility in invocation of methods.
-You can read more about above benefits of composition over inheritance at http://www.journaldev.com/1775/multiple-inheritance-in-java-and-composition-vs-inheritance[java composition vs inheritance].
-
-=== How to sort a collection of custom Objects in Java?
-
-We need to implement Comparable interface to support sorting of custom objects in a collection. Comparable interface has compareTo(T obj) method which is used by sorting methods and by providing this method implementation, we can provide default way to sort custom objects collection.
-
-However, if you want to sort based on different criteria, such as sorting an Employees collection based on salary or age, then we can create Comparator instances and pass it as sorting methodology. For more details read http://www.journaldev.com/780/java-comparable-and-comparator-example-to-sort-objects[Java Comparable and Comparator].
-
-=== What is inner class in java?
-
-We can define a class inside a class and they are called nested classes. Any non-static nested class is known as inner class. Inner classes are associated with the object of the class and they can access all the variables and methods of the outer class. Since inner classes are associated with instance, we can’t have any static variables in them.
-
-We can have local inner class or anonymous inner class inside a class. For more details read http://www.journaldev.com/996/java-nested-classes-java-inner-class-static-nested-class-local-inner-class-and-anonymous-inner-class[java inner class].
-
-=== What is anonymous inner class?
-
-A local inner class without name is known as anonymous inner class. An anonymous class is defined and instantiated in a single statement. Anonymous inner class always extend a class or implement an interface.
-
-Since an anonymous class has no name, it is not possible to define a constructor for an anonymous class. Anonymous inner classes are accessible only at the point where it is defined.
-
-=== What is Classloader in Java?
-
-Java Classloader is the program that loads byte code program into memory when we want to access any class. We can create our own classloader by extending ClassLoader class and overriding loadClass(String name) method. Learn more at http://www.journaldev.com/349/java-interview-questions-understanding-and-extending-java-classloader[java classloader].
-
-=== What are different types of classloaders?
-
-There are three types of built-in Class Loaders in Java:
-
-1.  Bootstrap Class Loader – It loads JDK internal classes, typically loads rt.jar and other core classes.
-2.  Extensions Class Loader – It loads classes from the JDK extensions directory, usually $JAVA_HOME/lib/ext directory.
-3.  System Class Loader – It loads classes from the current classpath that can be set while invoking a program using -cp or -classpath command line options.
-
-=== What is ternary operator in java?
-
-Java ternary operator is the only conditional operator that takes three operands. It’s a one liner replacement for if-then-else statement and used a lot in java programming. We can use ternary operator if-else conditions or even switch conditions using nested ternary operators. An example can be found at http://www.journaldev.com/963/java-ternary-operator-examples[java ternary operator].
+Check out Authentication Filter example at http://www.journaldev.com/1933/java-servlet-filter-example-tutorial#servlet-filter-example[**Servlet Filter Example**].
 
 
-=== What does super keyword do?
+=== What are the advantages of Servlet over CGI?
 
-super keyword can be used to access super class method when you have overridden the method in the child class.
+Servlet technology was introduced to overcome the shortcomings of CGI technology.
 
-We can use super keyword to invoke super class constructor in child class constructor but in this case it should be the first statement in the constructor method.
+*   Servlets provide better performance that CGI in terms of processing time, memory utilization because servlets uses benefits of multithreading and for each request a new thread is created, that is faster than loading creating new Object for each request with CGI.
+*   Servlets and platform and system independent, the web application developed with Servlet can be run on any standard web container such as Tomcat, JBoss, Glassfish servers and on operating systems such as Windows, Linux, Unix, Solaris, Mac etc.
+*   Servlets are robust because container takes care of life cycle of servlet and we don’t need to worry about memory leaks, security, garbage collection etc.
+*   Servlets are maintainable and learning curve is small because all we need to take care is business logic for our application.
 
-.SuperClass.java
-[source,java]
+
+=== How do you find out what client machine is making a request to your servlet ? 
+
+The ServletRequest class has functions for finding out the IP address or host name of the client machine. getRemoteAddr() gets the IP address of the client machine and getRemoteHost() gets the host name of the client machine. See example http://examples.javacodegeeks.com/enterprise-java/servlet/get-client-s-address-and-hostname-in-servlet/[here].
+
+
+
+=== What’s the difference between sendRedirect and forward methods ? 
+
+The sendRedirect method creates a new request, while the forward method just forwards a request to a new target. The previous request scope objects are not available after a redirect, because it results in a new request. On the other hand, the previous request scope objects are available after forwarding. FInally, in general, the sendRedirect method is considered to be slower compare to the forward method.
+
+
+
+
+
+
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+
+== JSP
+
+
+=== What is JSP and why do we need it?
+
+JSP stands for JavaServer Pages. JSP is java server side technology to create dynamic web pages. JSP is extension of Servlet technology to help developers create dynamic pages with HTML like syntax.
+
+We can create user views in servlet also but the code will become very ugly and error prone. Also most of the elements in web page is static, so JSP page is more suitable for web pages. We should avoid business logic in JSP pages and try to use it only for view purpose. JSP scripting elements can be used for writing java code in JSP pages but it’s best to avoid them and use JSP action elements, JSTL tags or custom tags to achieve the same functionalities.
+
+One more benefit of JSP is that most of the containers support hot deployment of JSP pages. Just make the required changes in the JSP page and replace the old page with the updated jsp page in deployment directory and container will load the new JSP page. We don’t need to compile our project code or restart server whereas if we make change in servlet code, we need to build the complete project again and deploy it. Although most of the containers now provide hot deployment support for applications but still it’s more work that JSP pages.
+
+A Java Server Page (JSP) is a text document that contains two types of text: static data and JSP elements. Static data can be expressed in any text-based format, such as HTML or XML. JSP is a technology that mixes static content with dynamically-generated content. See http://examples.javacodegeeks.com/enterprise-java/jsp/sample-jsp-java-server-page/[JSP example here].
+
+
+=== **How are the JSP requests handled ?** 
+
+On the arrival of a JSP request, the browser first requests a page with a .jsp extension. Then, the Web server reads the request and using the JSP compiler, the Web server converts the JSP page into a servlet class. Notice that the JSP file is compiled only on the first request of the page, or if the JSP file has changed.The generated servlet class is invoked, in order to handle the browser’s request. Once the execution of the request is over, the servlet sends a response back to the client. See http://examples.javacodegeeks.com/enterprise-java/jsp/get-request-parameter-in-jsp-page/[how to get Request parameters in a JSP].
+
+
+==== What are the advantages of JSP ?
+
+The advantages of using the JSP technology are shown below:
+
+*   JSP pages are dynamically compiled into servlets and thus, the developers can easily make updates to presentation code.
+*   JSP pages can be pre-compiled.
+*   JSP pages can be easily combined to static templates, including HTML or XML fragments, with code that generates dynamic content.
+*   Developers can offer customized JSP tag libraries that page authors access using an XML-like syntax.
+*   Developers can make logic changes at the component level, without editing the individual pages that use the application’s logic.
+
+
+
+=== What are the JSP lifecycle phases?
+
+If you will look into JSP page code, it looks like HTML and doesn’t look anything like java classes. Actually JSP container takes care of translating the JSP pages and create the servlet class that is used in web application. JSP lifecycle phases are:
+
+1.  **Translation** – JSP container checks the JSP page code and parse it to generate the servlet source code. For example in Tomcat you will find generated servlet class files at**TOMCAT/work/Catalina/localhost/WEBAPP/org/apache/jsp** directory. If the JSP page name is home.jsp, usually the generated servlet class name is home_jsp and file name is home_jsp.java
+2.  **Compilation** – JSP container compiles the jsp class source code and produce class file in this phase.
+3.  **Class Loading** – Container loads the class into memory in this phase.
+4.  **Instantiation** – Container invokes the no-args constructor of generated class to load it into memory and instantiate it.
+5.  **Initialization** – Container invokes the init method of JSP class object and initializes the servlet config with init params configured in deployment descriptor. After this phase, JSP is ready to handle client requests. Usually from translation to initialization of JSP happens when first request for JSP comes but we can configure it to be loaded and initialized at the time of deployment like servlets using load-on-startup element.
+6.  **Request Processing** – This is the longest lifecycle of JSP page and JSP page processes the client requests. The processing is multi-threaded and similar to servlets and for every request a new thread is spawned and ServletRequest and ServletResponse object is created and JSP service method is invoked.
+7.  **Destroy** – This is the last phase of JSP lifecycle where JSP class is unloaded from memory. Usually it happens when application is undeployed or the server is shut down.
+
+
+=== What are JSP lifecycle methods?
+
+JSP lifecycle methods are:
+
+1.  **jspInit()**: This method is declared in ``JspPage`` and it’s implemented by JSP container implementations. This method is called once in the JSP lifecycle to initialize it with config params configured in deployment descriptor. We can override this method using JSP declaration scripting element to initialize any resources that we want to use in JSP page.
+2.  **_jspService()**: This is the JSP method that gets invoked by JSP container for each client request by passing request and response object. Notice that method name starts with underscore to distinguish it from other lifecycle methods because we can’t override this method. All the JSP code goes inside this method and it’s overridden by default. We should not try to override it using JSP declaration scripting element. This method is defined in HttpJspPage interface.
+3.  **jspDestroy()**: This method is called by container when JSP is unloaded from memory such as shutting down application or container. This method is called only once in JSP lifecycle and we should override this method to release any resources created in JSP init method.
+
+
+=== Which JSP lifecycle methods can be overridden?
+
+We can override jspInit() and jspDestroy() methods using JSP declaration scripting element. We should override jspInit() methods to create common resources that we would like to use in JSP service method and override jspDestroy() method to release the common resources.
+
+
+=== How can we avoid direct access of JSP pages from client browser?
+
+We know that anything inside WEB-INF directory can’t be accessed directly in web application, so we can place our JSP pages in WEB-INF directory to avoid direct access to JSP page from client browser. But in this case, we will have to configure it in deployment descriptor just like Servlets. Sample configuration is given below code snippet of web.xml file.
+
+[source,xml]
 ----
-package com.journaldev.access;
+<servlet>
+  <servlet-name>Test</servlet-name>
+  <jsp-file>/WEB-INF/test.jsp</jsp-file>
+  <init-param>
+    <param-name>test</param-name>
+    <param-value>Test Value</param-value>
+  </init-param>
+</servlet>
+    
+<servlet-mapping>
+  <servlet-name>Test</servlet-name>
+  <url-pattern>/Test.do</url-pattern>
+</servlet-mapping>
+----
 
-public class SuperClass {
 
-  public SuperClass(){
-  }
+=== What are Expressions ? 
 
-  public SuperClass(int i){}
+A JSP expression is used to insert the value of a scripting language expression, converted into a string, into the data stream returned to the client, by the web server. Expressions are defined between ``<% = and %>``tags.
 
-  public void test(){
-    System.out.println("super class test method");
+
+
+=== What is Scriptlet, Expression and Declaration in JSP?
+
+In Java Server Pages (JSP) technology, a scriptlet is a piece of Java-code embedded in a JSP page. The scriptlet is everything inside the tags. Between these tags, a user can add any valid scriplet.
+
+Declarations are similar to variable declarations in Java. Declarations are used to declare variables for subsequent use in expressions or scriptlets. To add a declaration, you must use the sequences to enclose your declarations.
+
+
+Scriptlets, Expression and Declaration are scripting elements in JSP page using which we can add java code in the JSP pages.
+
+A scriptlet tag starts with ``<%`` and ends with ``%>``. Any code written inside the scriptlet tags go into the``_jspService()`` method. For example;
+
+[source,jsp]
+----
+<%
+Date d = new Date();
+System.out.println("Current Date="+d);
+%>
+----
+
+Since most of the times we print dynamic data in JSP page using __out.print()__ method, there is a shortcut to do this through JSP Expressions. JSP Expression starts with ``<%=`` and ends with ``%>``.
+
+``<% out.print("Pankaj"); %>`` can be written using JSP Expression as ``<%= "Pankaj" %>``
+
+Notice that anything between ``<%= %>`` is sent as parameter to ``out.print()`` method. Also notice that scriptlets can contain multiple java statements and always ends with semicolon (;) but expression doesn’t end with semicolon.
+
+JSP Declarations are used to declare member methods and variables of servlet class. JSP Declarations starts with ``<%!`` and ends with ``%>``.
+
+For example we can create an int variable in JSP at class level as ``<%! public static int count=0; %>``.
+
+
+=== What are JSP implicit objects?
+
+**JSP implicit objects** are created by container while translating JSP page to Servlet source to help developers. We can use these objects directly in **scriptlets** that goes in service method, however we can’t use them in JSP Declaration because that code will go at class level.
+
+We have 9 implicit objects that we can directly use in JSP page. Seven of them are declared as local variable at the start of ___jspService()__ method whereas two of them are part of ___jspService()__ method argument that we can use.
+
+1.  out Object
+2.  request Object
+3.  response Object
+4.  config Object
+5.  application Object
+6.  session Object
+7.  pageContext Object
+8.  page Object
+9.  exception Object
+10.  JSP Implicit Objects Example
+Read in detail about each one of them at http://www.journaldev.com/2038/jsp-implicit-objects-with-examples[**JSP Implicit Objects**].
+
+
+=== Can we use JSP implicit objects in a method defined in JSP Declaration?
+
+No we can’t because JSP implicit objects are local to service method and added by JSP Container while translating JSP page to servlet source code. JSP Declarations code goes outside the service method and used to create class level variables and methods and hence can’t use JSP implicit objects.
+
+
+=== Which implicit object is not available in normal JSP pages?
+
+JSP exception implicit object is not available in normal JSP pages and it’s used in JSP error pages only to catch the exception thrown by the JSP pages and provide useful message to the client.
+
+=== What are the benefits of PageContext implicit object?
+
+JSP pageContext implicit object is instance of javax.servlet.jsp.PageContext abstract class implementation. We can use pageContext to get and set attributes with different scopes and to forward request to other resources. pageContext object also hold reference to other implicit object.
+
+This is the only object that is common in both JSP implicit objects and in JSP EL implicit objects.
+
+=== How do we configure init params for JSP?
+
+We can configure init params for JSP similar to servlet in web.xml file, we need to configure JSP init params with servlet and servlet-mapping element. The only thing differs from servlet is jsp-file element where we need to provide the JSP page location.
+
+=== Why use of scripting elements in JSP is discouraged?
+
+JSP pages are mostly used for view purposes and all the business logic should be in the servlet or model classes. We should pass parameters to JSP page through attributes and then use them to create the HTML response in JSP page.
+
+Most part of the JSP page contains HTML code and to help web designers to easily understand JSP page and develop them, JSP technology provides action elements, JSP EL, JSP Standard Tag Library and custom tags that we should use rather than scripting elements to bridge the gap between JSP HTML part and JSP java part.
+
+=== Can we define a class in a JSP Page?
+
+It’s not a good practice though, but we can define a class inside a JSP Page. Below is the sample code for this:
+
+[source,jsp]
+----
+<%!
+private static class NestedClass { //static is better because Servlet is multi-threaded
+  private final int num = 0;
+  public int getNum() {
+    return num;
   }
 }
+%>
 ----
 
-Use of super keyword can be seen in below child class implementation.
+or
 
-.ChildClass.java
-[source,java]
+[source,jsp]
 ----
-package com.journaldev.access;
-
-public class ChildClass extends SuperClass {
-
-  public ChildClass(String str){
-    //access super class constructor with super keyword
-    super();
-
-    //access child class method
-    test();
-
-    //use super to access super class method
-    super.test();
-  }
-
-  @Override
-  public void test(){
-    System.out.println("child class test method");
-  }
-}
-----
-
-=== What is break and continue statement?
-
-We can use break statement to terminate for, while, or do-while loop. We can use break statement in switch statement to exit the switch case. You can see the example of break statement at http://www.journaldev.com/588/string-in-switch-case-example-java-7-feature[java break]. We can use break with label to terminate the nested loops.
-
-The continue statement skips the current iteration of a for, while or do-while loop. We can use continue statement with label to skip the current iteration of outermost loop.
-
-=== What is this keyword?
-
-this keyword provides reference to the current object and it’s mostly used to make sure that object variables are used, not the local variables having same name.
-
-[source,java]
-----
-//constructor
-public Point(int x, int y) {
-  this.x = x;
-  this.y = y;
-}
-----
-
-We can also use this keyword to invoke other constructors from a constructor.
-
-[source,java]
-----
-public Rectangle() {
-  this(0, 0, 0, 0);
-}
-public Rectangle(int width, int height) {
-  this(0, 0, width, height);
-}
-public Rectangle(int x, int y, int width, int height) {
-  this.x = x;
-  this.y = y;
-  this.width = width;
-  this.height = height;
-}
-----
-
-=== What is default constructor?
-
-No argument constructor of a class is known as default constructor. When we don’t define any constructor for the class, java compiler automatically creates the default no-args constructor for the class. If there are other constructors defined, then compiler won’t create default constructor for us.
-
-=== Can we have try without catch block?
-
-Yes, we can have try-finally statement and hence avoiding catch block.
-
-=== What is Garbage Collection?
-
-Garbage Collection is the process of looking at heap memory, identifying which objects are in use and which are not, and deleting the unused objects. In Java, process of deallocating memory is handled automatically by the garbage collector.
-
-We can run the garbage collector with code ``Runtime.getRuntime().gc()`` or use utility method ``System.gc()``. For a detailed analysis of Heap Memory and Garbage Collection, please read http://www.journaldev.com/2856/java-jvm-memory-model-and-garbage-collection-monitoring-tuning[Java Garbage Collection].
-
-=== What is Serialization and Deserialization?
-
-We can convert a Java object to an Stream that is called Serialization. Once an object is converted to Stream, it can be saved to file or send over the network or used in socket connections.
-
-The object should implement Serializable interface and we can use java.io.ObjectOutputStream to write object to file or to any OutputStream object. Read more at http://www.journaldev.com/927/how-to-write-object-to-file-in-java[Java Serialization].
-
-The process of converting stream data created through serialization to Object is called deserialization. Read more at http://www.journaldev.com/933/how-to-read-object-from-file-in-java[Java Deserialization].
-
-=== How to run a JAR file through command prompt?
-
-We can run a jar file using java command but it requires Main-Class entry in jar manifest file. Main-Class is the entry point of the jar and used by java command to execute the class. Learn more at http://www.journaldev.com/1344/how-to-run-jar-file-in-java[java jar file].
-
-=== What is the use of System class?
-
-Java System Class is one of the core classes. One of the easiest way to log information for debugging is System.out.print() method.
-
-System class is final so that we can’t subclass and override it’s behavior through inheritance. System class doesn’t provide any public constructors, so we can’t instantiate this class and that’s why all of it’s methods are static.
-
-Some of the utility methods of System class are for array copy, get current time, reading environment variables. Read more at http://www.journaldev.com/1847/java-system-java-lang-system-class[Java System Class].
-
-=== What is instanceof keyword?
-
-We can use instanceof keyword to check if an object belongs to a class or not. We should avoid it’s usage as much as possible. Sample usage is:
-
-[source,java]
-----
-public static void main(String args[]){
-  Object str = new String("abc");
-
-  if(str instanceof String){
-    System.out.println("String value:"+str);
-  }
-
-  if(str instanceof Integer){
-    System.out.println("Integer value:"+str);
-  }
-}
-----
-
-Since str is of type String at runtime, first if statement evaluates to true and second one to false.
-
-
-=== Can we use String with switch case?
-
-One of the Java 7 feature was improvement of switch case of allow Strings. So if you are using Java 7 or higher version, you can use String in switch-case statements. Read more at http://www.journaldev.com/588/string-in-switch-case-example-java-7-feature[Java switch-case String example].
-
-=== Java is Pass by Value or Pass by Reference?
-
-This is a very confusing question, we know that object variables contain reference to the Objects in heap space. When we invoke any method, a copy of these variables is passed and gets stored in the stack memory of the method. We can test any language whether it’s pass by reference or pass by value through a simple generic swap method, to learn more read http://www.journaldev.com/3884/java-is-pass-by-value-and-not-pass-by-reference[Java is Pass by Value and Not Pass by Reference].
-
-=== What is difference between Heap and Stack Memory?
-
-Major difference between Heap and Stack memory are as follows:
-
-*   Heap memory is used by all the parts of the application whereas stack memory is used only by one thread of execution.
-*   Whenever an object is created, it’s always stored in the Heap space and stack memory contains the reference to it. Stack memory only contains local primitive variables and reference variables to objects in heap space.
-*   Memory management in stack is done in LIFO manner whereas it’s more complex in Heap memory because it’s used globally.
-For a detailed explanation with a sample program, read http://www.journaldev.com/4098/java-heap-memory-vs-stack-memory-difference[Java Heap vs Stack Memory].
-
-=== Java Compiler is stored in JDK, JRE or JVM?
-
-The task of java compiler is to convert java program into bytecode, we have ``javac`` executable for that. So it must be stored in JDK, we don’t need it in JRE and JVM is just the specs.
-
-=== What will be the output of following programs?
-
-A. **static method in class**
-
-[source,java]
-----
-package com.journaldev.util;
-
-public class Test {
-
-  public static String toString(){
-    System.out.println("Test toString called");
-    return "";
-  }
-
-  public static void main(String args[]){
-    System.out.println(toString());
-  }
-}
-----
-
-**Answer**: The code won’t compile because we can’t have an Object class method with static keyword. You will get compile time error as “This static method cannot hide the instance method from Object”. The reason is that static method belongs to class and since every class base is Object, we can’t have same method in instance as well as in class.
-
-B. **static method invocation**
-
-[source,java]
-----
-package com.journaldev.util;
-
-public class Test {
-
-  public static String foo(){
-    System.out.println("Test foo called");
-    return "";
-  }
-
-  public static void main(String args[]){
-    Test obj = null;
-    System.out.println(obj.foo());
-  }
-}
-----
-
-**Answer**: Well this is a strange situation. We all have seen ``NullPointerException`` when we invoke a method on object that is NULL. The compiler will give warning as “The static method foo() from the type Test should be accessed in a static way” but when executing it will work and prints “Test foo called”.
-
-Ideally Java API should have given error when a static method is called from an object rather than giving warning, but I think it’s too late now to impose this. And most strange of all is that even though obj is null here, when invoking static method it works fine. I think it’s working fine because Java runtime figures out that foo() is a static method and calls it on the class loaded into the memory and doesn’t use the object at all, so no NullPointerException.
-
-
-=== Q. What if the main method is declared as private?
-
-The program compiles properly but at runtime it will give “Main method not public.” message.
-
-=== Q. What is meant by pass by reference and pass by value in Java?
-
-Pass by reference means, passing the **address** itself rather than passing the value. Pass by value means passing a **copy**of the value.
-
-=== Q. If you’re overriding the method equals() of an object, which other method you might also consider?
-
-hashCode()
-
-Q. What is Byte Code? Or Q. What gives java it’s “write once and run anywhere” nature?
-
-All Java programs are compiled into class files that contain bytecodes. These byte codes can be run in any platform and hence java is said to be platform independent.
-
-=== Q. Expain the reason for each keyword of public static void main(String args[])?
-
-*   **public** – main(..) is the first method called by java environment when a program is executed so it has to accessible from java environment. Hence the access specifier has to be public.
-*   **static** : Java environment should be able to call this method without creating an instance of the class , so this method must be declared as static.
-*   **void** : main does not return anything so the return type must be void
-The argument String indicates the argument type which is given at the command line and arg is an array for string given during command line.
-
-=== Q. What are the differences between == and .equals() ?
-
-The `==` operator compares two objects to determine if they are the same object in memory i.e. present in the same memory location. It is possible for two String objects to have the same value, but located in different areas of memory.
-
-`==` compares references while .equals compares contents. The method public boolean equals(Object obj) is provided by the Object class and can be overridden. The default implementation returns true only if the object is compared with itself, which is equivalent to the equality operator == being used to compare aliases to the object. String, BitSet, Date, and File override the equals() method. For two String objects, value equality means that they contain the same character sequence. For the Wrapper classes, value equality means that the primitive values are equal.
-
-[source,java]
-----
-public class EqualsTest {
-
-    public static void main(String[] args) {
-
-        String s1 =“abc”;
-        String s2 = s1;
-        String s5 =“abc”;
-        String s3 = new String(”abc”);
-        String s4 = new String(”abc”);
-        System.out.println(” == comparison:”+(s1 == s5));
-        System.out.println(” == comparison:”+(s1 == s2));
-        System.out.println(”Using equals method:”+s1.equals(s2));
-        System.out.println(” == comparison:”+s3 == s4);
-        System.out.println(”Using equals method:”+s3.equals(s4));
+<%     
+    class Person {
+        //this will go inside method body, so can't be public
     }
-}
-----
-
-.Output
-----
-== comparison : true
-== comparison : true
-Using equals method : true
-false
-Using equals method : true
-----
-
-=== What if the static modifier is removed from the signature of the main method? Or Q. What if I do not provide the String array as the argument to the method?
-
-Program compiles. But at runtime throws an error “NoSuchMethodError”.
-
-
-
-=== Q. Why oracle Type 4 driver is named as oracle thin driver?
-
-Oracle provides a Type 4 JDBC driver, referred to as the Oracle “thin” driver. This driver includes its own implementation of a TCP/IP version of Oracle’s Net8 written entirely in Java, so it is platform independent, can be downloaded to a browser at runtime, and does not require any Oracle software on the client side. This driver requires a TCP/IP listener on the server side, and the client connection string uses the TCP/IP port address, not the TNSNAMES entry for the database name.
-
-=== Q. What is the difference between final, finally and finalize? What do you understand by the java final keyword?OrQ. What is final, finalize() and finally?OrQ. What is finalize() method?OrQ. What does it mean that a class or member is final?
-
-*   **final** – declare constant
-*   **finally** – handles exception
-*   **finalize** – helps in garbage collection
-Variables defined in an interface are implicitly final. A final class can’t be extended i.e., final class may not be subclassed. This is done for security reasons with basic classes like String and Integer. It also allows the compiler to make some optimizations, and makes thread safety a little easier to achieve. A final method can’t be overridden when its class is inherited. You can’t change value of a final variable (is a constant). finalize() method is used just before an object is destroyed and garbage collected. finally, a key word used in exception handling and will be executed whether or not an exception is thrown. For example, closing of open connections is done in the finally method.
-
-=== Q. What is the Java API?
-
-The Java API is a large collection of ready-made software components that provide many useful capabilities, such as graphical user interface (GUI) widgets.
-
-=== Q. What is the GregorianCalendar class?
-
-The GregorianCalendar provides support for traditional Western calendars.
-
-=== Q. What is the ResourceBundle class?
-
-The ResourceBundle class is used to store locale-specific resources that can be loaded by a program to tailor the program’s appearance to the particular locale in which it is being run.
-
-=== Q. Why there are no global variables in Java?
-
-Global variables are globally accessible. Java does not support globally accessible variables due to following reasons:
-
-*   The global variables breaks the referential transparency
-*   Global variables create collisions in namespace.
-
-=== Q. How to convert String to Number in java program?
-
-The valueOf() function of Integer class is is used to convert string to Number. Here is the code example:
-
-[source,java]
-----
-String numString = "1000";
-int id=Integer.valueOf(numString).intValue();
-----
-
-=== Q. What is the SimpleTimeZone class?
-
-The SimpleTimeZone class provides support for a Gregorian calendar.
-
-=== Q. What is the difference between a while statement and a do statement?
-
-A while statement (pre test) checks at the beginning of a loop to see whether the next loop iteration should occur. A do while statement (post test) checks at the end of a loop to see whether the next iteration of a loop should occur. The do statement will always execute the loop body at least once.
-
-=== Q. What is the Locale class?
-
-The Locale class is used to tailor a program output to the conventions of a particular geographic, political, or cultural region.
-
-=== Q. Describe the principles of OOPS.
-
-There are three main principals of oops which are called Polymorphism, Inheritance and Encapsulation.
-
-=== Q. Explain the Inheritance principle.
-
-Inheritance is the process by which one object acquires the properties of another object. Inheritance allows well-tested procedures to be reused and enables changes to make once and have effect in all relevant places
-
-=== Q. What is implicit casting?
-
-Implicit casting is the process of simply assigning one entity to another without any transformation guidance to the compiler. This type of casting is not permitted in all kinds of transformations and may not work for all scenarios.
-
-**Example**
-
-[source,java]
-----
-int i = 1000;
-long j = i; //Implicit casting
-----
-
-=== Q. Is sizeof a keyword in java?
-
-The sizeof is not a keyword.
-
-=== Q. What is a native method?
-
-A native method is a method that is implemented in a language other than Java.
-
-=== Q. In System.out.println(), what is System, out and println?
-
-System is a predefined final class, out is a PrintStream object and println is a built-in overloaded method in the out object.
-
-=== Q. What are Encapsulation, Inheritance and PolymorphismOrQ. Explain the Polymorphism principle. Explain the different forms of  Polymorphism.
-
-Polymorphism in simple terms means one name many forms. Polymorphism enables one entity to be used as a general category for different types of actions. The specific action is determined by the exact nature of the situation.
-
-**Polymorphism exists in three distinct forms in Java:**
-
-*   Method overloading
-*   Method overriding through inheritance
-*   Method overriding through the Java interface
-
-=== Q. What is explicit casting?
-
-Explicit casting in the process in which the complier are specifically informed to about transforming the object.
-
-
-=== Q. What is the Java Virtual Machine (JVM)?
-
-The Java Virtual Machine is software that can be ported onto various hardware-based platforms
-
-=== Q. What do you understand by downcasting?
-
-The process of Downcasting refers to the casting from a general to a more specific type, i.e. casting down the hierarchy
-
-=== Q. What are Java Access Specifiers?OrQ. What is the difference between public, private, protected and default Access Specifiers?OrQ. What are different types of access modifiers?
-
-Access specifiers are keywords that determine the type of access to the member of a class. These keywords are for allowing privileges to parts of a program such as functions and variables. These are:
-
-*   Public: accessible to all classes
-*   Protected: accessible to the classes within the same package and any subclasses.
-*   Private: accessible only to the class to which they belong
-*   Default: accessible to the class to which they belong and to subclasses within the same package
-
-=== Q. Which class is the superclass of every class?
-
-Object.
-
-=== Q. Name primitive Java types.
-
-The 8 primitive types are byte, char, short, int, long, float, double, and boolean. Additional is String.
-
-=== Q. What is the difference between static and non-static variables?OrQ. What are “class variables”?OrQ. What is static in java?OrQ. What is a static method?
-
-A static variable is associated with the class as a whole rather than with specific instances of a class. Each object will share a common copy of the static variables i.e. there is only one copy per class, no matter how many objects are created from it. Class variables or static variables are declared with the static keyword in a class. These are declared outside a class and stored in static memory. Class variables are mostly used for constants. Static variables are always called by the class name. This variable is created when the program starts and gets destroyed when the programs stops. The scope of the class variable is same an instance variable. Its initial value is same as instance variable and gets a default value when it’s not initialized corresponding to the data type. Similarly, a static method is a method that belongs to the class rather than any object of the class and doesn’t apply to an object or even require that any objects of the class have been instantiated. Static methods are implicitly final, because overriding is done based on the type of the object, and static methods are attached to a class, not an object. A static method in a superclass can be shadowed by another static method in a subclass, as long as the original method was not declared final. However, you can’t override a static method with a non-static method. In other words, you can’t change a static method into an instance method in a subclass.
-
-Non-static variables take on unique values with each object instance.
-
-=== Q. What is the difference between the boolean & operator and the && operator?
-
-If an expression involving the boolean & operator is evaluated, both operands are evaluated, whereas the && operator is a short cut operator. When an expression involving the && operator is evaluated, the first operand is evaluated. If the first operand returns a value of true then the second operand is evaluated. If the first operand evaluates to false, the evaluation of the second operand is skipped.
-
-=== Q. How does Java handle integer overflows and underflows?
-
-It uses those low order bytes of the result that can fit into the size of the type allowed by the operation.
-
-=== Q. What if I write static public void instead of public static void?
-
-Program compiles and runs properly.
-
-=== Q. What is the difference between declaring a variable and defining a variable?
-
-In declaration we only mention the type of the variable and its name without initializing it. Defining means declaration + initialization. E.g. String s; is just a declaration while String s = new String (”bob”); Or String s = “bob”; are both definitions.
-
-=== Q. What type of parameter passing does Java support?
-
-In Java the arguments (primitives and objects) are always **passed by value.** With objects, the object reference itself is passed by value and so both the original reference and parameter copy both refer to the same object.
-
-=== Q. Explain the Encapsulation principle.
-
-Encapsulation is a process of binding or wrapping the data and the codes that operates on the data into a single entity. This keeps the data safe from outside interface and misuse. Objects allow procedures to be encapsulated with their data to reduce potential interference. One way to think about encapsulation is as a protective wrapper that prevents code and data from being arbitrarily accessed by other code defined outside the wrapper.
-
-=== Q. What do you understand by a variable?
-
-Variable is a named memory location that can be easily referred in the program. The variable is used to hold the data and it can be changed during the course of the execution of the program.
-
-=== Q. What do you understand by numeric promotion?
-
-The Numeric promotion is the conversion of a smaller numeric type to a larger numeric type, so that integral and floating-point operations may take place. In the numerical promotion process the byte, char, and short values are converted to int values. The int values are also converted to long values, if necessary. The long and float values are converted to double values, as required.
-
-=== Q. What do you understand by casting in java language? What are the types of casting?
-
-The process of converting one data type to another is called Casting. There are two types of casting in Java; these are implicit casting and explicit casting.
-
-=== Q. What is the first argument of the String array in main method?
-
-The String array is empty. It does not have any element. This is unlike C/C++ where the first element by default is the program name. If we do not provide any arguments on the command line, then the String array of main method will be empty but not null.
-
-=== Q. How can one prove that the array is not null but empty?
-
-Print array.length. It will print 0. That means it is empty. But if it would have been null then it would have thrown a NullPointerException on attempting to print array.length.
-
-=== Q. Can an application have multiple classes having main method?
-
-Yes. While starting the application we mention the class name to be run. The JVM will look for the main method only in the class whose name you have mentioned. Hence there is not conflict amongst the multiple classes having main method.
-
-=== Q. When is static variable loaded? Is it at compile time or runtime? When exactly a static block is loaded in Java?
-
-Static variable are loaded when classloader brings the class to the JVM. It is not necessary that an object has to be created. Static variables will be allocated memory space when they have been loaded. The code in a static block is loaded/executed only once i.e. when the class is first initialized. A class can have any number of static blocks. Static block is not member of a class, they do not have a return statement and they cannot be called directly. Cannot contain this or super. They are primarily used to initialize static fields.
-
-=== Q. Can I have multiple main methods in the same class?
-
-We can have multiple overloaded main methods but there can be **only one main method with the following signature :**
-
-```java
-public static void main(String[] args) {}
-```
-
-No the program fails to compile. The compiler says that the main method is already defined in the class.
-
-=== Q. Explain working of Java Virtual Machine (JVM)?
-
-JVM is an abstract computing machine like any other real computing machine which first converts .java file into .class file by using Compiler (.class is nothing but byte code file.) and Interpreter reads byte codes.
-
-=== Q. How can I swap two variables without using a third variable?
-
-Add two variables and assign the value into First variable. Subtract the Second value with the result Value. and assign to Second variable. Subtract the Result of First Variable With Result of Second Variable and Assign to First Variable. Example:
-
-```java
-int a=5,b=10;a=a+b; b=a-b; a=a-b;
-```
-
-An other approach to the same question
-
-You use an XOR swap. (BEST APPROACH) as in case of using above approach it may goes over/under flow. For example:
-
-```java
-int a = 5; int b = 10;
-```
-
-```java
-a = a ^ b;
-```
-
-```java
-b = a ^ b;
-```
-
-```java
-a = a ^ b;
-```
-
-=== Q. What is data encapsulation?
-
-Encapsulation may be used by creating ‘get’ and ’set’ methods in a class (JAVABEAN) which are used to access the fields of the object. Typically the fields are made private while the get and set methods are public. Encapsulation can be used to validate the data that is to be stored, to do calculations on data that is stored in a field or fields, or for use in introspection (often the case when using javabeans in Struts, for instance). Wrapping of data and function into a single unit is called as data encapsulation. Encapsulation is nothing but wrapping up the data and associated methods into a single unit in such a way that data can be accessed with the help of associated methods. Encapsulation provides data security. It is nothing but data hiding.
-
-=== Q. What is reflection API? How are they implemented?
-
-Reflection is the process of introspecting the features and state of a class at runtime and dynamically manipulate at run time. This is supported using Reflection API with built-in classes like Class, Method, Fields, Constructors etc. Example: Using Java Reflection API we can get the class name, by using the getName method.
-
-=== Q. Does JVM maintain a cache by itself? Does the JVM allocate objects in heap? Is this the OS heap or the heap maintained by the JVM? Why
-
-Yes, the JVM maintains a cache by itself. It creates the Objects on the HEAP, but references to those objects are on the STACK.
-
-=== Q. What is phantom memory?
-
-Phantom memory is false memory. Memory that does not exist in reality.
-
-=== Q. Can a method be static and synchronized?
-
-A static method can be synchronized. If you do so, the JVM will obtain a lock on the java.lang.
-
-Class instance associated with the object. It is similar to saying:
-
-```java
-synchronized(XYZ.class) {
-
-}
-```
-
-
-=== Q. What is difference between String and StringTokenizer?
-
-A StringTokenizer is utility class used to break up string.
-
-**Example:**
-
-[source,java]
-----
-StringTokenizer st = new StringTokenizer(”Hello World”);
-while(st.hasMoreTokens()) {
-    System.out.println(st.nextToken());
-}
-----
-
-----
-Hello
-Hello
+%>
 ----
 
 
-=== Question: What is transient variable?
+=== How can we disable java code or scripting in JSP page?
 
-Transient variable can’t be serialize. For example if a variable is declared as transient in a Serializable class and the class is written to an ObjectStream, the value of the variable can’t be written to the stream instead when the class is retrieved from the ObjectStream the value of the variable becomes **null**.
+We can disable scripting elements in JSP pages through deployment descriptor configuration like below.
 
-transient
+[source,xml]
+----
+<jsp-config>
+    <jsp-property-group>
+        <url-pattern>*.jsp</url-pattern>
+        <scripting-invalid>true</scripting-invalid>
+    </jsp-property-group>
+</jsp-config>
+----
 
-identifies a variable not to be written out when an
-identifies a variable not to be written out when an identifies a variable not to be written out when an``
+Above url-pattern will disable scripting for all the JSP pages but if you want to disable it only for specific page, you can give the JSP file name itself.
+
+
+
+
+=== What are Directives ? What are the different types of Directives available in JSP ? 
+
+Directives are instructions that are processed by the JSP engine, when the page is compiled to a servlet. Directives are used to set page-level instructions, insert data from external files, and specify custom tag libraries. Directives are defined between ``< %@ and % >``.The different types of directives are shown below:
+
+*   ``Include directive``: it is used to include a file and merges the content of the file with the current page.
+*   ``Page directive``: it is used to define specific attributes in the JSP page, like error page and buffer.
+*   ``Taglib``: it is used to declare a custom tag library which is used in the page.
+
+
+
+=== Explain JSP Action Elements or Action Tags?
+
+JSP action elements or action tags are HTML like tags that provide useful functionalities such as working with Java Bean, including a resource, forwarding the request and to generate dynamic XML elements. JSP action elements always starts with jsp: and we can use them in JSP page directly without the need to import any tag libraries or any other configuration changes. Some of the important action elements are jsp:useBean, jsp:getProperty, jsp:setProperty, jsp:include and jsp:forward.
+
+Read more in details about these at http://www.journaldev.com/2082/jsp-standard-action-tags-quick-tutorial[**JSP Action Elements**].
+
+JSP actions use constructs in XML syntax to control the behavior of the servlet engine. JSP actions are executed when a JSP page is requested. They can be dynamically inserted into a file, re-use JavaBeans components, forward the user to another page, or generate HTML for the Java plugin.Some of the available actions are listed below:
+
+*   ``jsp:include`` – includes a file, when the JSP page is requested.
+*   ``jsp:useBean`` – finds or instantiates a JavaBean.
+*   ``jsp:setProperty`` – sets the property of a JavaBean.
+*   ``jsp:getProperty`` – gets the property of a JavaBean.
+*   ``jsp:forward`` – forwards the requester to a new page.
+*   ``jsp:plugin`` – generates browser-specific code.
 
 
 
 
 
+=== What is difference between include directive and jsp:include action?
+
+The difference between JSP include directive and include action is that in include directive the content to other resource is added to the generated servlet code at the time of translation whereas with include action it happens at runtime.
+
+Another difference is that in JSP include action, we can pass params to be used in the included resource with jsp:param action element but in JSP include directive we can’t pass any params.
+
+When included resource is static such as header, footer, image files then we should use include directive for faster performance but if the included resource is dynamic and requires some parameters for processing then we should use include action tag.
+
+=== What is JSP Expression Language and what are it’s benefits?
+
+Most of the times we use JSP for view purposes and all the business logic is present in servlet code or model classes. When we receive client request in servlet, we process it and then add attributes in request/session/context scope to be retrieved in JSP code. We also use request params, headers, cookies and init params in JSP to create response views.
+
+We can use scriptlets and JSP expressions to retrieve attributes and parameters in JSP with java code and use it for view purpose. But for web designers, java code is hard to understand and that’s why JSP Specs 2.0 introduced Expression Language (EL) through which we can get attributes and parameters easily using HTML like tags.
+
+Expression language syntax is ``${name}`` and we can use EL implicit objects and EL operators to retrieve the attributes from different scopes and use them in JSP page.
+
+Read more about JSP EL with example program at http://www.journaldev.com/2064/jsp-expression-language-el-example-tutorial[**JSP EL Tutorial**].
 
 
 
+=== What are JSP EL implicit objects and how it’s different from JSP implicit Objects?
+
+JSP Expression Language provides many implicit objects that we can use to get attributes from different scopes and parameter values. Note that these are different from JSP implicit objects and contains only the attributes in given scope. The only common implicit object in JSP EL and JSP page is pageContext object.
+
+Below table provides list of implicit object in JSP EL.
 
 
+
+[options="header,footer"]
+|====
+| JSP EL Implicit Objects | Type | Description
+| pageScope | Map | A map that contains the attributes set with page scope.
+| requestScope | Map | Used to get the attribute value with request scope.
+| sessionScope | Map | Used to get the attribute value with session scope.
+| applicationScope | Map | Used to get the attributes value from application scope.
+| param | Map | Used to get the request parameter value, returns a single value
+| paramValues | Map | Used to get the request param values in an array, useful when request parameter contain multiple values.
+| header | Map | Used to get request header information.
+| headerValues | Map | Used to get header values in an array.
+| cookie | Map | Used to get the cookie value in the JSP
+| initParam | Map | Used to get the context init params, we can’t use it for servlet init params
+| pageContext | pageContext | Same as JSP implicit pageContext object, used to get the request, session references etc. example usage is getting request HTTP Method name.
+|====
+
+
+=== How to use JSP EL to get HTTP method name?
+
+We can use pageContext JSP EL implicit object to get the request object reference and use dot operator to get the HTTP method name in JSP page. The JSP EL code for this will be ``${pageContext.request.method}``.
+
+
+=== What are different types of comments in JSP?
+
+JSP pages provide two types of comments that we can use:
+
+*   **HTML Comments**: Since JSP pages are like HTML, we can use HTML comments like ``<-- HTML Comment -->``. These comments are sent to client also and we can see it in HTML source. So we should avoid any code level comments or debugging comments using HTML comments.
+*   **JSP Comments**: JSP Comments are written using scriptlets like ``<%-- JSP Comment --%>``. These comments are present in the generated servlet source code and doesn’t sent to client. For any code level or debugging information comments we should use JSP comments.
+
+
+=== What is JSP Standard Tag Library, provide some example usage?
+
+JSP Standard Tag Library or JSTL is more versatile than JSP EL or Action elements because we can loop through a collection or escape HTML tags to show them like text in response.
+
+JSTL is part of the Java EE API and included in most servlet containers. But to use JSTL in our JSP pages, we need to download the JSTL jars for your servlet container. Most of the times, you can find them in the example projects and you can use them. You need to include these libraries in the project WEB-INF/lib directory. These jars are container specific, for example in Tomcat, we need to include jstl.jar and standard.jar jar files in project build path.
+
+Read more about JSTL tags with example program at http://www.journaldev.com/2090/jstl-tutorial-with-examples-jstl-core-tags[**JSTL Tutorial**].
+
+=== What are the types of JSTL tags?
+
+Based on the JSTL functions, they are categorized into five types.
+
+1.  Core Tags – Core tags provide support for iteration, conditional logic, catch exception, url, forward or redirect response etc.
+2.  Formatting and Localization Tags – These tags are provided for formatting of Numbers, Dates and i18n support through locales and resource bundles.
+3.  SQL Tags – JSTL SQL Tags provide support for interaction with relational databases such as Oracle, MySql etc.
+4.  XML Tags – XML tags are used to work with XML documents such as parsing XML, transforming XML data and XPath expressions evaluation.
+5.  JSTL Functions Tags – JSTL tags provide a number of functions that we can use to perform common operation, most of them are for String manipulation such as String Concatenation, Split String etc.
+
+=== What is JSP Custom Tag and what are it’s components?
+
+Sometimes JSP EL, Action Tags and JSTL tags are not enough and we might get tempted to write java code to perform some operations in JSP page. Fortunately JSP is extendable and we can create our own custom tags to perform certain operations.
+
+We can create JSP Custom Tags with following components:
+
+*   JSP Custom Tag Handler
+*   Creating Tag Library Descriptor (TLD) File
+*   Deployment Descriptor Configuration for TLD
+We can add custom tag library in JSP page using taglib directive and then use it.
+
+=== Give an example where you need JSP Custom Tag?
+
+Let’s say we want to show a number with formatting with commas and spaces. This can be very useful for user when the number is really long. So we want some custom tags like below:
+
+``<mytags:formatNumber number="123456.789" format="#,###.00"/>``
+
+Based on the number and format passed, it should write the formatted number in JSP page, for above example it should print 123,456.79
+
+We know that JSTL doesn’t provide any inbuilt tags to achieve this, so we will create our own custom tag implementation and use it in the JSP page.
+
+Read above example implementation at http://www.journaldev.com/2099/jsp-custom-tags-example-tutorial[**JSP Custom Tag**].
+
+=== Why don’t we need to configure JSP standard tags in web.xml?
+
+We don’t need to configure JSP standard tags in web.xml because the TLD files are inside the META-INF directory of the JSTL jar files. When container loads the web application and find TLD files inside the META-INF directory of JAR file, it automatically configures them to be used directly in the application JSP pages. All we need to do it to include it in the JSP page using taglib directive.
+
+=== How can we handle exceptions thrown by JSP service method?
+
+To handle exceptions thrown by the JSP page, all we need is an error page and define the error page in JSP using page directive.
+
+To create a JSP error page, we need to set page directive attribute isErrorPage value to true, then we can access exception implicit object in the JSP and use it to send customized error message to the client.
+
+We need to define exception and error handler JSP pages in the deployment descriptor like below.
+
+[source,xml]
+----
+<error-page>
+     <error-code>404</error-code>
+     <location>/error.jsp</location>
+</error-page>
+  
+<error-page>
+     <exception-type>java.lang.Throwable</exception-type>
+     <location>/error.jsp</location>
+</error-page>
+----
+
+Read more with example program at http://www.journaldev.com/2049/jsp-exception-handling-with-error-pages[**JSP Exception Handling**].
+
+
+=== How do we catch exception and process it using JSTL?
+
+We can use JSTL Core tags c:catch and c:if to catch exception inside the JSP service method and process it. c:catch tag catches the exception and wraps it into the exception variable and we can use c:if condition tag to process it. Below code snippet provide sample usage.
+
+[source,jsp]
+----
+<c:catch var ="exception">
+   <% int x = 5/0;%>
+</c:catch>
+  
+<c:if test = "${exception ne null}">
+   <p>Exception is : ${exception} <br />
+   Exception Message: ${exception.message}</p>
+</c:if>
+----
+
+Notice the use of JSP EL in the c:if condition.
+
+
+
+=== How do we print “<br> creates a new line in HTML” in JSP?
+
+We can use c:out escapeXml attribute to escape the HTML elements so that it get’s shown as text in the browser, for this scenario we will write code like below.
+
+ <c:out value="<br> creates a new line in HTML" escapeXml="true"></c:out>
+
+
+=== What is jsp-config in deployment descriptor?
+
+jsp-config element is used to configure different parameters for JSP pages. Some of it’s usage are:
+
+*   Configuring tag libraries for the web application like below.
+
+[source,xml]
+----
+<jsp-config>
+        <taglib>
+            <taglib-uri>http://journaldev.com/jsp/tlds/mytags</taglib-uri>
+            <taglib-location>/WEB-INF/numberformatter.tld</taglib-location>
+        </taglib>
+</jsp-config>
+----
+
+*   We can control scripting elements in JSP pages.
+*   We can control JSP Expression Language (EL) evaluation in JSP pages.
+*   We can define the page encoding for URL pattern.
+*   To define the buffer size to be used in JSP page out object.
+*   To denote that the group of resources that match the URL pattern are JSP documents, and thus must be interpreted as XML documents.
+
+
+
+=== Can we use JavaScript with JSP Pages?
+
+Yes why not, I have seen some developers getting confused with this. Even though JSP is a server side technology, it’s used to generate client side response and we can add javascript or CSS code like any other HTML page.
+
+=== How can we prevent implicit session creation in JSP?
+
+By default JSP page creates a session but sometimes we don’t need session in JSP page. We can use JSP page directive session attribute to indicate compiler to not create session by default. It’s default value is true and session is created. To disable the session creation, we can use it like below.
+
+ <%@ page session ="false" %>
+
+
+
+=== What is difference between JspWriter and Servlet PrintWriter?
+
+PrintWriter is the actual object responsible for writing the content in response. JspWriter uses the PrintWriter object behind the scene and provide buffer support. When the buffer is full or flushed, JspWriter uses the PrintWriter object to write the content into response.
+
+=== How can we extend JSP technology?
+
+We can extend JSP technology with custom tags to avoid scripting elements and java code in JSP pages.
+
+=== Provide some JSP Best Practices?
+
+Some of the JSP best practices are:
+
+1.  Avoid scripting elements in JSP pages. If JSP EL, action elements and JSTL not serve your needs then create custom tags.
+2.  Use comment properly, use JSP comments for code level or debugging purpose so that it’s not sent to client.
+3.  Avoid any business logic in JSP page, JSP pages should be used only for response generation for client.
+4.  Disable session creation in JSP page where you don’t need it for better performance.
+5.  Use page, taglib directives at the start of JSP page for better readability.
+6.  Proper use of jsp include directive or include action based on your requirements, include directive is good for static content whereas include action is good for dynamic content and including resource at runtime.
+7.  Proper exception handling using JSP error pages to avoid sending container generated response incase JSP pages throw exception in service method.
+8.  If you are having CSS and JavaScript code in JSP pages, it’s best to place them in separate files and include them in JSP page.
+9.  Most of the times JSTL is enough for our needs, if you find a scenario where it’s not then check your application design and try to put the logic in a servlet that will do the processing and then set attributes to be used in JSP pages.
 
 
 

@@ -1,0 +1,247 @@
+= Threads
+:toc: macro
+:numbered:
+
+toc::[]
+
+
+
+
+== What do we understand by the term concurrency?
+
+Concurrency is the ability of a program to execute several computations simultaneously. This can be achieved by distributing the computations over the available CPU cores of a machine or even over different machines within the same network.
+
+
+=== What are Concurrent Collection Classes?
+
+Java Collection classes are fail-fast which means that if the Collection will be changed while some thread is traversing over it using iterator, the iterator.next() will throw ConcurrentModificationException.
+
+Concurrent Collection classes support full concurrency of retrievals and adjustable expected concurrency for updates.  
+
+Major classes are ConcurrentHashMap, CopyOnWriteArrayList and CopyOnWriteArraySet, check this post to learn http://www.journaldev.com/378/how-to-avoid-concurrentmodificationexception-when-using-an-iterator[how to avoid ConcurrentModificationException when using iterator].
+
+
+=== What is a semaphore?
+
+A semaphore is a data structure that maintains a set of permits that have to be acquired by competing threads. Semaphores can therefore be used to control how many threads access a critical section or resource simultaneously. Hence the constructor of ``java.util.concurrent.Semaphore`` takes as first parameter the number of permits the threads compete about. Each invocation of its ``acquire()`` methods tries to obtain one of the available permits. The method ``acquire()``without any parameter blocks until the next permit gets available. Later on, when the thread has finished its work on the critical resource, it can release the permit by invoking the method ``release()`` on an instance of Semaphore.
+
+
+=== What is a ``CountDownLatch``?
+
+The SDK class ``CountDownLatch`` provides a synchronization aid that can be used to implement scenarios in which threads have to wait until some other threads have reached the same state such that all thread can start. This is done by providing a synchronized counter that is decremented until it reaches the value zero. Having reached zero the ``CountDownLatch``instance lets all threads proceed. This can be either used to let all threads start at a given point in time by using the value 1 for the counter or to wait until a number of threads has finished. In the latter case the counter is initialized with the number of threads and each thread that has finished its work counts the latch down by one.
+
+
+
+=== What is the difference between a ``CountDownLatch`` and a ``CyclicBarrier``?
+
+Both SDK classes maintain internally a counter that is decremented by different threads. The threads wait until the internal counter reaches the value zero and proceed from there on. But in contrast to the ``CountDownLatch`` the class ``CyclicBarrier``resets the internal value back to the initial value once the value reaches zero. As the name indicates instances of``CyclicBarrier`` can therefore be used to implement use cases where threads have to wait on each other again and again.
+
+
+=== What is atomic operation? What are atomic classes in Java Concurrency API?
+
+Atomic operations are performed in a single unit of task without interference from other operations. Atomic operations are necessity in multi-threaded environment to avoid data inconsistency.
+
+int++ is not an atomic operation. So by the time one threads read it’s value and increment it by one, other thread has read the older value leading to wrong result.
+
+To solve this issue, we will have to make sure that increment operation on count is atomic, we can do that using Synchronization but Java 5 java.util.concurrent.atomic provides wrapper classes for int and long that can be used to achieve this atomically without usage of Synchronization. Go to this article to learn more about http://www.journaldev.com/1095/java-atomic-operations-atomicinteger-example[atomic concurrent classes].
+
+
+=== What is Lock interface in Java Concurrency API? What are it’s benefits over synchronization?
+
+Lock interface provide more extensive locking operations than can be obtained using synchronized methods and statements. They allow more flexible structuring, may have quite different properties, and may support multiple associated Condition objects.
+
+The advantages of a lock are
+
+*   it’s possible to make them fair
+*   it’s possible to make a thread responsive to interruption while waiting on a Lock object.
+*   it’s possible to try to acquire the lock, but return immediately or after a timeout if the lock can’t be acquired
+*   it’s possible to acquire and release locks in different scopes, and in different orders
+
+
+=== What is Executors Framework?
+
+In Java 5, Executor framework was introduced with the java.util.concurrent.Executor interface.
+
+The Executor framework is a framework for standardizing invocation, scheduling, execution, and control of asynchronous tasks according to a set of execution policies.
+
+Creating a lot many threads with no bounds to the maximum threshold can cause application to run out of heap memory. So, creating a ThreadPool is a better solution as a finite number of threads can be pooled and reused. Executors framework facilitate process of creating Thread pools in java. Check out this post to learn with example code to http://www.journaldev.com/1069/java-thread-pool-example-using-executors-and-threadpoolexecutor[create thread pool using Executors framework].
+
+
+
+=== What is Executors Class?
+
+Executors class provide utility methods for Executor, ExecutorService, ScheduledExecutorService, ThreadFactory, and Callable classes.
+
+Executors class can be used to easily create Thread Pool in java, also this is the only class supporting execution of Callable implementations.
+
+
+=== What is BlockingQueue? How can we implement Producer-Consumer problem using Blocking Queue?
+
+java.util.concurrent.BlockingQueue is a Queue that supports operations that wait for the queue to become non-empty when retrieving and removing an element, and wait for space to become available in the queue when adding an element.
+
+BlockingQueue doesn’t accept null values and throw NullPointerException if you try to store null value in the queue.
+
+BlockingQueue implementations are thread-safe. All queuing methods are atomic in nature and use internal locks or other forms of concurrency control.
+
+BlockingQueue interface is part of java collections framework and it’s primarily used for implementing producer consumer problem.  
+
+Check this post for http://www.journaldev.com/1034/java-blockingqueue-example-implementing-producer-consumer-problem[producer-consumer problem implementation using BlockingQueue].
+
+
+
+=== What is the relation between the two interfaces Executor and ExecutorService?
+
+The interface ``Executor`` only defines one method: ``execute(Runnable)``. Implementations of this interface will have to execute the given Runnable instance at some time in the future. The ``ExecutorService`` interface is an extension of the``Executor`` interface and provides additional methods to shut down the underlying implementation, to await the termination of all submitted tasks and it allows submitting instances of ``Callable``.
+
+
+=== What happens when you ``submit()`` a new task to an ExecutorService instance whose queue is already full?
+
+As the method signature of ``submit()`` indicates, the ``ExecutorService`` implementation is supposed to throw a``RejectedExecutionException``.
+
+
+=== What is a ScheduledExecutorService?
+
+The interface ``ScheduledExecutorService`` extends the interface ``ExecutorService`` and adds method that allow to submit new tasks to the underlying implementation that should be executed a given point in time. There are two methods to schedule one-shot tasks and two methods to create and execute periodic tasks.
+
+
+
+
+=== What is Callable and Future?
+
+Java 5 introduced java.util.concurrent.Callable interface in concurrency package that is similar to Runnable interface but it can return any Object and able to throw Exception.
+
+Callable interface use Generic to define the return type of Object. Executors class provide useful methods to execute Callable in a thread pool. Since callable tasks run in parallel, we have to wait for the returned Object. Callable tasks return java.util.concurrent.Future object. Using Future we can find out the status of the Callable task and get the returned Object. It provides get() method that can wait for the Callable to finish and then return the result.  
+
+Check this post for http://www.journaldev.com/1090/java-callable-future-example[Callable Future Example].
+
+
+
+=== Which are use cases for the class ``java.util.concurrent.Future``?
+
+Instances of the class ``java.util.concurrent.Future`` are used to represent results of asynchronous computations whose result are not immediately available. Hence the class provides methods to check if the asynchronous computation has finished, canceling the task and to the retrieve the actual result. The latter can be done with the two ``get()`` methods provided. The first ``get()`` methods takes no parameter and blocks until the result is available whereas the second ``get()``method takes a timeout parameter that lets the method invocation return if the result does not get available within the given timeframe.
+
+
+
+=== What is FutureTask Class?
+
+FutureTask is the base implementation class of Future interface and we can use it with Executors for asynchronous processing. Most of the time we don’t need to use FutureTask class but it comes real handy if we want to override some of the methods of Future interface and want to keep most of the base implementation. We can just extend this class and override the methods according to our requirements. Check out **http://www.journaldev.com/1650/java-futuretask-example-program[Java FutureTask Example]** post to learn how to use it and what are different methods it has.
+
+
+
+=== What do we understand by lock striping?
+
+In contrast to lock splitting, where we introduce different locks for different aspects of the application, lock striping uses multiple locks to guard different parts of the same data structure. An example for this technique is the class``ConcurrentHashMap`` from JDK’s ``java.util.concurrent`` package. The ``Map`` implementation uses internally different buckets to store its values. The bucket is chosen by the value’s key. ``ConcurrentHashMap`` now uses different locks to guard different hash buckets. Hence one thread that tries to access the first hash bucket can acquire the lock for this bucket, while another thread can simultaneously access a second bucket. In contrast to a synchronized version of ``HashMap`` this technique can increase the performance when different threads work on different buckets.
+
+
+=== What do we understand by a CAS operation?
+
+CAS stands for compare-and-swap and means that the processor provides a separate instruction that updates the value of a register only if the provided value is equal to the current value. CAS operations can be used to avoid synchronization as the thread can try to update a value by providing its current value and the new value to the CAS operation. If another thread has meanwhile updated the value, the thread’s value is not equal to the current value and the update operation fails. The thread then reads the new value and tries again. That way the necessary synchronization is interchanged by an optimistic spin waiting.
+
+
+
+=== Which Java classes use the CAS operation?
+
+The SDK classes in the package ``java.util.concurrent.atomic`` like ``AtomicInteger`` or ``AtomicBoolean`` use internally the CAS operation to implement concurrent incrementation.
+
+[source,java]
+----
+public class CounterAtomic {
+    private AtomicLong counter = new AtomicLong();
+ 
+    public void increment() {
+        counter.incrementAndGet();
+    }
+ 
+    public long get() {
+        return counter.get();
+    }
+}
+----
+
+
+
+
+
+
+
+
+=== What are some of the improvements in Concurrency API in Java 8?
+
+Some important concurrent API enhancements are:
+
+    *   ConcurrentHashMap compute(), forEach(), forEachEntry(), forEachKey(), forEachValue(), merge(), reduce() and search() methods.
+    *   CompletableFuture that may be explicitly completed (setting its value and status).
+    *   Executors newWorkStealingPool() method to create a work-stealing thread pool using all available processors as its target parallelism level.
+
+
+
+=== Do you know an easy way to construct a thread pool with 5 threads that executes some tasks that return a value?
+
+The SDK provides a factory and utility class ``Executors`` whose static method ``newFixedThreadPool(int nThreads)`` allows the creation of a thread pool with a fixed number of threads (the implementation of ``MyCallable`` is omitted):
+
+[source,java]
+----
+01public static void main(String[] args) throws InterruptedException, ExecutionException {
+    ExecutorService executorService = Executors.newFixedThreadPool(5);
+    Future<Integer>[] futures = new Future[5];
+    for (int i = 0; i < futures.length; i++) {
+        futures[i] = executorService.submit(new MyCallable());
+    }
+    for (int i = 0; i < futures.length; i++) {
+        Integer retVal = futures[i].get();
+        System.out.println(retVal);
+    }
+    executorService.shutdown();
+}
+----
+
+
+
+=== What kind of tasks can be solved by using the Fork/Join framework?
+
+The base class of the Fork/Join Framework ``java.util.concurrent.ForkJoinPool`` is basically a thread pool that executes instances of ``java.util.concurrent.ForkJoinTask``. The class ``ForkJoinTask`` provides the two methods ``fork()`` and ``join()``. While ``fork()`` is used to start the asynchronous execution of the task, the method ``join()`` is used to await the result of the computation. Hence the Fork/Join framework can be used to implement divide-and-conquer algorithms where a more complex problem is divided into a number of smaller and easier to solve problems.
+
+
+
+=== Is it possible to find the smallest number within an array of numbers using the Fork/Join-Framework?
+
+The problem of finding the smallest number within an array of numbers can be solved by using a divide-and-conquer algorithm. The smallest problem that can be solved very easily is an array of two numbers as we can determine the smaller of the two numbers directly by one comparison. Using a divide-and-conquer approach the initial array is divided into two parts of equal length and both parts are provided to two instances of ``RecursiveTask`` that extend the class ``ForkJoinTask``. By forking the two tasks they get executed and either solve the problem directly, if their slice of the array has the length two, or they again recursively divide the array into two parts and fork two new RecursiveTasks. Finally each task instance returns its result (either by having it computed directly or by waiting for the two subtasks). The root tasks then returns the smallest number in the array.
+
+
+
+
+=== What is the difference between the two classes ``RecursiveTask`` and ``RecursiveAction``?
+
+In contrast to ``RecursiveTask`` the method ``compute()`` of ``RecursiveAction`` does not have to return a value. Hence``RecursiveAction`` can be used when the action works directly on some data structure without having to return the computed value.
+
+
+=== Is it possible to perform stream operations in Java 8 with a thread pool?
+
+Collections provide the method ``parallelStream()`` to create a stream that is processed by a thread pool. Alternatively you can call the intermediate method ``parallel()`` on a given stream to convert a sequential stream to a parallel counterpart.
+
+
+=== How can we access the thread pool that is used by parallel stream operations?
+
+The thread pool used for parallel stream operations can be accessed by ``ForkJoinPool.commonPool()``. This way we can query its level of parallelism with ``commonPool.getParallelism()``. The level cannot be changed at runtime but it can be configured by providing the following JVM parameter: ``-Djava.util.concurrent.ForkJoinPool.common.parallelism=5``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

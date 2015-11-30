@@ -329,6 +329,11 @@ ArrayList, HashMap, TreeMap, Hashtable classes provide random access to it’s e
 Vector, Hashtable, Properties and Stack are synchronized classes, so they are thread-safe and can be used in multi-threaded environment. Java 1.5 Concurrent API included some collection classes that allows modification of collection while iteration because they work on the clone of the collection, so they are safe to use in multi-threaded environment.
 
 
+=== Is there a simple way to create a synchronized instance of an arbitrary implementation of ``Collection``, ``List`` or ``Map``?
+
+The utility class Collections provides the methods ``synchronizedCollection(Collection)``, ``synchronizedList(List)`` and``synchronizedMap(Map)`` that return a thread-safe collection/list/map that is backed by the given instance.
+
+
 === What are concurrent Collection Classes?
 
 Java 1.5 Concurrent package (``java.util.concurrent``) contains thread-safe collection classes that allow collections to be modified while iterating. By design Iterator implementation in ``java.util`` packages are fail-fast and throws ConcurrentModificationException. But Iterator implementation in``java.util.concurrent`` packages are fail-safe and we can modify the collection while iterating. Some of these classes are ``CopyOnWriteArrayList``, ``ConcurrentHashMap``, ``CopyOnWriteArraySet``.
@@ -542,6 +547,12 @@ HashMap and Hashtable both implements Map interface and looks similar, however t
 3.  ``LinkedHashMap`` was introduced in Java 1.4 as a subclass of HashMap, so incase you want iteration order, you can easily switch from HashMap to LinkedHashMap but that is not the case with Hashtable whose iteration order is unpredictable.
 4.  HashMap provides Set of keys to iterate and hence it’s fail-fast but Hashtable provides Enumeration of keys that doesn’t support this feature.
 5.  Hashtable is considered to be legacy class and if you are looking for modifications of Map while iterating, you should use ConcurrentHashMap.
+
+
+=== What is the difference between ``HashMap`` and ``Hashtable`` particularly with regard to thread-safety?
+
+The methods of ``Hashtable`` are all synchronized. This is not the case for the ``HashMap`` implementation. Hence ``Hashtable`` is thread-safe whereas ``HashMap`` is not thread-safe. For single-threaded applications it is therefore more efficient to use the “newer” ``HashMap`` implementation.
+
 
 
 === How to decide between HashMap and TreeMap?
