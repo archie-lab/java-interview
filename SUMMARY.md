@@ -2,5 +2,7 @@
 
 * [Introduction](README.md)
 * [TOC](eng/TOC.adoc)
-   * [OOP](eng/oop.md)
+   * [OOP](eng/OOP.adoc)
+   * [Java Core](eng/Java Core.adoc)
+   * [Collections](eng/Collections.adoc)
 
