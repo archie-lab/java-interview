@@ -1,11 +1,11 @@
-= Java Core
+= Collections
 :toc: macro
 :numbered:
 
 toc::[]
 
 
-== Collections
+== Java Collections
 
 
 image::../images/collections.png[]
@@ -68,11 +68,6 @@ The `Vector` class provides the capability to implement a growable array of obje
 Deletion in linked list is fast because it involves only updating the next pointer in the node before the deleted node and updating the previous pointer in the node after the deleted node.  
 
 
-=== What is a *Values Collection View* ?
-
-It is a collection returned by the `values()` method of the *Map Interface*, It contains all the objects present as values in the map. 
-
-
 === What is *Comparable Interface*?
 
 It is used to sort collections and arrays of objects using the `collections.sort()` and `java.utils`. The objects of the class implementing the `Comparable` interface can be ordered.  
@@ -103,7 +98,13 @@ Java provides the `Comparator` interface, which contains two methods, called `co
 
 === Why Collection doesn’t extend Cloneable and Serializable interfaces ?
 
-The `Collection` interface specifies groups of objects known as elements. Each concrete implementation of a `Collection` can choose its own way of how to maintain and order its elements. Some collections allow duplicate keys, while some other collections don’t. The semantics and the implications of either cloning or serialization come into play when dealing with actual implementations. Thus, the concrete implementations of collections should decide how they can be cloned or serialized.
+Collection interface specifies group of Objects known as elements. How the elements are maintained is left up to the concrete implementations of Collection. For example, some Collection implementations like List allow duplicate elements whereas other implementations like Set don’t.  
+
+A lot of the Collection implementations have a public clone method. However, it does’t really make sense to include it in all implementations of Collection. This is because Collection is an abstract representation. What matters is the implementation.  
+
+The semantics and the implications of either cloning or serializing come into play when dealing with the actual implementation; so concrete implementation should decide how it should be cloned or serialized, or even if it can be cloned or serialized.  
+
+So mandating cloning and serialization in all implementations is actually less flexible and more restrictive. The specific implementation should make the decision as to whether it can be cloned or serialized.
 
 
 === How can we sort a list of Objects?
@@ -117,23 +118,9 @@ We need to implement Comparable interface to support sorting of custom objects i
 However, if you want to sort based on different criteria, such as sorting an Employees collection based on salary or age, then we can create Comparator instances and pass it as sorting methodology. For more details read http://www.journaldev.com/780/java-comparable-and-comparator-example-to-sort-objects[Java Comparable and Comparator].
 
 
-=== Why Collection doesn’t extend Cloneable and Serializable interfaces?
-
-Collection interface specifies group of Objects known as elements. How the elements are maintained is left up to the concrete implementations of Collection. For example, some Collection implementations like List allow duplicate elements whereas other implementations like Set don’t.  
-
-A lot of the Collection implementations have a public clone method. However, it does’t really make sense to include it in all implementations of Collection. This is because Collection is an abstract representation. What matters is the implementation.  
-
-The semantics and the implications of either cloning or serializing come into play when dealing with the actual implementation; so concrete implementation should decide how it should be cloned or serialized, or even if it can be cloned or serialized.  
-
-So mandating cloning and serialization in all implementations is actually less flexible and more restrictive. The specific implementation should make the decision as to whether it can be cloned or serialized.
 
 
 === **What is an Iterator ?**
-
-The ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator]`` interface provides a number of methods that are able to iterate over any ``http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html[Collection]``. Each Java ``http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html[Collection]`` contains the ``http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html#iterator%28%29[iterator]`` method that returns an ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator]`` instance. Iterators arehttp://www.javacodegeeks.com/2011/05/avoid-concurrentmodificationexception.html[capable of removing elements from the underlying collection] during the iteration.
-
-
-=== What is an Iterator?
 
 Iterator interface provides methods to iterate over any Collection. We can get iterator instance from a Collection using __iterator()__ method. Iterator takes the place of Enumeration in the Java Collections Framework. Iterators allow the caller to remove elements from the underlying collection during the iteration. Java Collection iterator provides a generic way for traversal through the elements of a collection and implements **http://www.journaldev.com/1716/iterator-design-pattern-in-java-example-tutorial[Iterator Design Pattern]**.
 
@@ -148,14 +135,7 @@ The semantics are unclear, given that the contract for Iterator makes no guarant
 It can be implemented on top of current Iterator interface but since it’s use will be rare, it doesn’t make sense to include it in the interface that everyone has to implement.
 
 
-=== **What differences exist between Iterator and ListIterator ?**The differences of these elements are listed below:
-
-*   An ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator]`` can be used to traverse the ``http://docs.oracle.com/javase/7/docs/api/java/util/Set.html[Set]`` and ``http://docs.oracle.com/javase/7/docs/api/java/util/List.html[List]`` collections, while the ``http://docs.oracle.com/javase/7/docs/api/java/util/ListIterator.html[ListIterator]`` can be used to iterate only over ``http://docs.oracle.com/javase/7/docs/api/java/util/List.html[Lists]``.
-*   The ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator]`` can traverse a collection only in forward direction, while the ``http://docs.oracle.com/javase/7/docs/api/java/util/ListIterator.html[ListIterator]`` can traverse a ``http://docs.oracle.com/javase/7/docs/api/java/util/List.html[List]`` in both directions.
-*   The ``http://docs.oracle.com/javase/7/docs/api/java/util/ListIterator.html[ListIterator]`` implements the ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator]`` interface and contains extra functionality, such as adding an element, replacing an element, getting the index position for previous and next elements, etc.
-
-
-=== What is different between Iterator and ListIterator?
+=== What differences exist between Iterator and ListIterator ?
 
 *   We can use Iterator to traverse Set and List collections whereas ListIterator can be used with Lists only.
 *   Iterator can traverse in forward direction only whereas ListIterator can be used to traverse in both the directions.

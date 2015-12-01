@@ -35,7 +35,7 @@ Java uses *Just-In-Time compiler* to enable high performance. +
 It is designed to adapt to an evolving environment. Java programs can carry extensive amount of run-time information that can be used to verify and resolve accesses to objects on run-time.
 
 
-=== What is *JVM* ? Why is Java called the “*Platform* Independent Programming Language” ?
+=== *JVM* ? Why is Java called the “*Platform* Independent Programming Language” ?
 
 The Java Virtual Machine is software that can be ported onto various hardware-based platforms. JVM is not platform independent, thats why you have different JVM for different operating systems.
 
@@ -48,7 +48,7 @@ Java Development Kit (JDK) is for development purpose and JVM is a part of it to
 
 JDK provides all the tools, executables and binaries required to compile, debug and execute a Java Program. The execution part is handled by JVM to provide machine independence.
 
-=== What is the difference between *JVM* and **JRE**?
+=== Difference between *JVM* and **JRE**?
 
 _Java Runtime Environment_ (**JRE**) is the implementation of JVM.  JRE consists of JVM and java binaries and other classes to execute any program successfully. JRE doesn’t contain any development tools like java compiler, debugger etc. It includes browser plugins for applet execution. If you want to execute any java program, you should have JRE installed.
 
@@ -73,12 +73,12 @@ Garbage collection does not guarantee that a program will not run out of memory.
  
 
 
-=== Define JIT compiler?  
+=== Define *JIT* compiler?  
 
 It improves the runtime performance of computer programs based on bytecode.  
 
 
-=== Classloader?
+=== **Classloader**?
 
 - object that is responsible for loading classes. 
 - is an abstract class.  
@@ -86,7 +86,7 @@ It improves the runtime performance of computer programs based on bytecode.
 Java Classloader is the program that loads byte code program into memory when we want to access any class. We can create our own classloader by extending `ClassLoader` class and overriding `loadClass(String name)` method. Learn more at http://www.journaldev.com/349/java-interview-questions-understanding-and-extending-java-classloader[java classloader].
 
 
-=== What are different types of classloaders?
+=== Different *types* of **classloaders**?
 
 There are three types of built-in Class Loaders in Java:
 
@@ -101,7 +101,7 @@ The task of java compiler is to convert java program into bytecode, we have ``ja
 So it must be stored in JDK, we don’t need it in JRE and JVM is just the specs.
 
 
-=== Why Java doesn’t support *multiple inheritance*?
+=== *Multiple inheritance*?
 
 Java doesn’t support multiple inheritance in classes because of “Diamond Problem”. To know more about diamond problem with example, read http://www.journaldev.com/1775/multiple-inheritance-in-java-and-composition-vs-inheritance[Multiple Inheritance in Java].
 
@@ -115,23 +115,21 @@ Java is not said to be pure object oriented because it support primitive types s
 As we know, for all the primitive types we have wrapper classes such as Integer, Long etc that provides some additional methods.
 
 
-=== Can we have *multiple public classes* in a java source file?
+=== *multiple public classes* in a java source file?
 
 We can’t have more than one public class in a single java source file. A single source file can have multiple classes that are not public.
 
 
-=== What is difference between Heap and Stack Memory?
+=== Difference between *Heap* and **Stack Memory**?
 
 Major difference between Heap and Stack memory are as follows:
 
-*   Heap memory is used by all the parts of the application whereas stack memory is used only by one thread of execution.
+*   *Heap memory* is used by all the parts of the application whereas stack memory is used only by one thread of execution.
 *   Whenever an object is created, it’s always stored in the Heap space and stack memory contains the reference to it. Stack memory only contains local primitive variables and reference variables to objects in heap space.
-*   Memory management in stack is done in LIFO manner whereas it’s more complex in Heap memory because it’s used globally.
+*   Memory management in stack is done in *LIFO* manner whereas it’s more complex in Heap memory because it’s used globally.
 For a detailed explanation with a sample program, read http://www.journaldev.com/4098/java-heap-memory-vs-stack-memory-difference[Java Heap vs Stack Memory].
 
-=== Q. Does JVM maintain a cache by itself? Does the JVM allocate objects in heap? Is this the OS heap or the heap maintained by the JVM? Why
 
-Yes, the JVM maintains a cache by itself. It creates the Objects on the HEAP, but references to those objects are on the STACK.
 
 
 
@@ -151,7 +149,7 @@ Yes, the JVM maintains a cache by itself. It creates the Objects on the HEAP, bu
 == About the language and syntax
 
 
-=== List primitive Java types?  
+=== List *primitive* Java types?  
 
 The eight primitive types are:
 
@@ -165,14 +163,14 @@ The eight primitive types are:
 - boolean. 
 
 
-=== What does the static keyword mean ? Can you override private or static method in Java ?
+=== `static` keyword Can you override static method?
 
 The `static` keyword denotes that a member variable or method can be accessed, without requiring an instantiation of the class to which it belongs. A user cannot override http://www.javacodegeeks.com/2012/05/java-static-methods-can-be-code-smell.html[static methods in Java], because method overriding is based upon dynamic binding at runtime and static methods are statically binded at compile time. A static method is not associated with any instance of a class so the concept is not applicable.
 
 
 
 
-=== What is the difference between *static* and *non-static* variables?  
+=== Difference between *static* and *non-static* variables?  
 
 A static variable is associated with the class as a whole rather than with specific instances of a class. + 
 Non-static variables take on unique values with each object instance.
@@ -182,7 +180,7 @@ Non-static variables take on unique values with each object instance.
 A static variable in Java belongs to its class and its value remains the same for all its instances. A static variable is initialized when the class is loaded by the JVM. If your code tries to access a non-static variable, without any instance, the compiler will complain, because those variables are not created yet and they are not associated with any instance.
 
 
-=== *static block*?
+=== *Static block*?
 
 Java static block is the group of statements that gets executed when the class is loaded into memory by Java ClassLoader. It is used to initialize static variables of the class. Mostly it’s used to create static resources when class is loaded.
 
@@ -194,17 +192,17 @@ Java static block is the group of statements that gets executed when the class i
  For example, the compiler converts an `int` to an `Integer`, a double to a `Double`, and so on. If the conversion goes the other way, this operation is called ``unboxing``.
 
 
-=== Function overloading?  
+=== **Method overloading**?  
 
 If a class has multiple functions by same name but different parameters, it is known as Method Overloading.  
 
 
-=== Function overriding?  
+=== **Method overriding**?  
 
-If a subclass provides a specific implementation of a method that is already provided by its parent class, it is known as Method Overriding.  
+If a subclass provides a specific implementation of a method that is already provided by its parent class.  
 
 
-=== Difference between Overloading and Overriding?  
+=== Difference between *Overloading* and **Overriding**?  
 
 Method overloading in Java occurs when two or more methods in the same class have the exact same name, but different parameters. +
 On the other hand, method overriding is defined as the case when a child class redefines the same method as a parent class. +
@@ -215,10 +213,9 @@ We can use `@Override` annotation in the child class overridden method to make s
 
 
 
-=== What do you mean by **Access Modifier**?  
+=== **Access Modifier**?  
 
 Java provides access modifiers to set access levels for classes, variables, methods and constructors. A member has package or default accessibility when no accessibility modifier is specified.  
-
 
 Java provides access control through public, private and protected access modifier keywords. When none of these are used, it’s called default access modifier.  
 
@@ -248,54 +245,59 @@ Variables used in a switch statement can only be a :
 - byte
 - short 
 - int 
-- char  
+- char 
+- String (Java 7)
 
 
 
-=== *`super`* keyword?  
+=== `super` keyword?  
 
 If the method overrides one of its superclass's methods, overridden method can be invoked through the use of the keyword super. It can be also used to refer to a hidden field. 
 
+In a constructor of a class `A` that exstends another class `B` we can call a constructor of class `B`.
 
 
-=== Serialization and deserialization?  
 
-Serialization is the process of writing the state of an object to a byte stream. Deserialization is the process of restoring these objects. 
+=== *Serialization* and **deserialization**?  
 
-We can convert a Java object to an Stream that is called Serialization. Once an object is converted to Stream, it can be saved to file or send over the network or used in socket connections.
+*Serialization* is the process of writing the state of an object to a byte stream. +
+Deserialization is the process of restoring these objects. 
 
-The object should implement Serializable interface and we can use java.io.ObjectOutputStream to write object to file or to any OutputStream object. Read more at http://www.journaldev.com/927/how-to-write-object-to-file-in-java[Java Serialization].
+Once an object is converted to Stream, it can be saved to file or send over the network or used in socket connections.
+
+The object should implement Serializable interface and we can use `java.io.ObjectOutputStream` to write object to file or to any OutputStream object. Read more at http://www.journaldev.com/927/how-to-write-object-to-file-in-java[Java Serialization].
 
 The process of converting stream data created through serialization to Object is called deserialization. Read more at http://www.journaldev.com/933/how-to-read-object-from-file-in-java[Java Deserialization].
 
 
 
-=== What is *`final`* keyword?
+=== `final` keyword?
 
 `final` keyword is used with `Class` to make sure no other class can extend it, for example String class is final and we can’t extend it.
 
 We can use final keyword with methods to make sure child classes can’t override it.
 
-final keyword can be used with variables to make sure that it can be assigned only once. However the state of the variable can be changed, for example we can assign a final variable to an object only once but the object variables can change later on.
+`final` keyword can be used with variables to make sure that it can be assigned only once. However the state of the variable can be changed, for example we can assign a final variable to an object only once but the object variables can change later on.
 
-Java interface variables are by default final and static.
+ Java interface variables are by default final and static.
 
 
 === `transient` variable?  
 
-A transient variable is a variable that may not be serialized during Serialization and which is initialized by its default value during de-serialization 
+A `transient` variable is a variable that may not be serialized during Serialization and which is initialized by its default value during de-serialization 
 
-Transient variable can’t be serialize. For example if a variable is declared as transient in a Serializable class and the class is written to an ObjectStream, the value of the variable can’t be written to the stream instead when the class is retrieved from the ObjectStream the value of the variable becomes **null**.
-
-
-=== Difference between a break statement and a continue statement?  
-
-A break statement results in the termination of the statement to which it applies (switch, for, do, or while). +
-A continue statement is used to end the current loop iteration and return control to the loop statement.
+Transient variable can’t be serialize. +
+For example if a variable is declared as transient in a `Serializable` class and the class is written to an ``ObjectStream``, the value of the variable can’t be written to the stream instead when the class is retrieved from the `ObjectStream` the value of the variable becomes ``null``.
 
 
+=== Difference between a *break statement* and a **continue statement**?
 
-=== static import?
+A `break` statement results in the termination of the statement to which it applies (switch, for, do, or while). +
+A `continue` statement is used to end the current loop iteration and return control to the loop statement.
+
+
+
+=== **static import**?
 
 If we have to use any static variable or method from other class, usually we import the class and then use the method/variable with class name.
 
@@ -322,7 +324,7 @@ Use of static import can cause confusion, so it’s better to avoid it. Overuse 
 
 === *this* keyword?
 
-this keyword provides reference to the current object and it’s mostly used to make sure that object variables are used, not the local variables having same name.
+`this` keyword provides reference to the current object and it’s mostly used to make sure that object variables are used, not the local variables having same name.
 
 [source,java]
 ----
@@ -356,42 +358,43 @@ public Rectangle(int x, int y, int width, int height) {
 
 === ``Enum``?
 
-Enum was introduced in Java 1.5 as a new type whose fields consists of fixed set of constants. For example, in Java we can create Direction as enum with fixed fields as EAST, WEST, NORTH, SOUTH.
+`enum` was introduced in Java 1.5 as a new type whose fields consists of fixed set of constants. 
+ 
+ For example, in Java we can create Direction as enum with fixed fields as EAST, WEST, NORTH, SOUTH.
 
-enum is the keyword to create an enum type and similar to class. Enum constants are implicitly static and final. Read more in detail at http://www.journaldev.com/716/java-enum-examples-with-benefits-and-class-usage[java enum].
+`enum` is the keyword to create an enum type and similar to ``class``. Enum constants are implicitly `static` and ``final``. Read more in detail at http://www.journaldev.com/716/java-enum-examples-with-benefits-and-class-usage[java enum].
 
 
-=== Java Annotations?
+=== **Annotations**?
 
-Java Annotations provide information about the code and they have no direct effect on the code they annotate. Annotations are introduced in Java 5. Annotation is metadata about the program embedded in the program itself. It can be parsed by the annotation parsing tool or by compiler. We can also specify annotation availability to either compile time only or till runtime also. Java Built-in annotations are @Override, @Deprecated and @SuppressWarnings. Read more at http://www.journaldev.com/721/java-annotations-tutorial-with-custom-annotation-example-and-parsing-using-reflection[java annotations].
+Java Annotations provide information about the code and they have no direct effect on the code they annotate. +
+Annotations are introduced in Java 5. +
+Annotation is metadata about the program embedded in the program itself. It can be parsed by the annotation parsing tool or by compiler. We can also specify annotation availability to either compile time only or till runtime also. Java Built-in annotations are @Override, @Deprecated and @SuppressWarnings. Read more at http://www.journaldev.com/721/java-annotations-tutorial-with-custom-annotation-example-and-parsing-using-reflection[java annotations].
 
-=== What is Java Reflection API? Why it’s so important to have?
 
-Java Reflection API provides ability to inspect and modify the runtime behavior of java application. We can inspect a java class, interface, enum and get their methods and field details. Reflection API is an advanced topic and we should avoid it in normal programming. Reflection API usage can break the design pattern such as Singleton pattern by invoking the private constructor i.e violating the rules of access modifiers.
+=== Java **Reflection API**? Why it’s so important to have?
+
+*Java Reflection API* provides ability to inspect and modify the runtime behavior of java application. We can inspect a java class, interface, enum and get their methods and field details. Reflection API is an advanced topic and we should avoid it in normal programming. Reflection API usage can break the design pattern such as Singleton pattern by invoking the private constructor i.e violating the rules of access modifiers.
 
 Even though we don’t use Reflection API in normal programming, it’s very important to have. We can’t have any frameworks such as Spring, Hibernate or servers such as Tomcat, JBoss without Reflection API. They invoke the appropriate methods and instantiate classes through reflection API and use it a lot for other processing.
 
-Read http://www.journaldev.com/1789/java-reflection-tutorial-for-classes-methods-fields-constructors-annotations-and-much-more[Java Reflection Tutorial] to get in-depth knowledge of reflection api.
-
-Reflection is the process of introspecting the features and state of a class at runtime and dynamically manipulate at run time. This is supported using Reflection API with built-in classes like Class, Method, Fields, Constructors etc. Example: Using Java Reflection API we can get the class name, by using the getName method.
+Reflection is the process of introspecting the features and state of a class at runtime and dynamically manipulate at run time. This is supported using Reflection API with built-in classes like ``Class``, ``Method``, ``Fields``, `Constructors` etc.
 
 
-=== *``instanceof``* keyword?
+=== ``instanceof`` keyword?
 
-We can use instanceof keyword to check if an object belongs to a class or not. We should avoid it’s usage as much as possible. Sample usage is:
-
-
-=== What is *`finalize()`* method?  
-
-It is possible to define a method that will be called just before an object's final destruction by the garbage collector. This method is called finalize( ), and it can be used to ensure that an object terminates cleanly.
+We can use `instanceof` keyword to check if an object belongs to a class or not. We should avoid it’s usage as much as possible.
 
 
-=== Under what conditions is an object's finalize() method invoked by the garbage collector?  
+=== What is `finalize()` method?  
+
+It is possible to define a method that will be called just before an object's final destruction by the garbage collector. This method is called ``finalize( )``, and it can be used to ensure that an object terminates cleanly.
 
 The garbage collector invokes an object's finalize() method when it detects that the object has become unreachable.  
 
 
-===  What are pass by reference and pass by value ?
+
+===  *Pass by reference* and *pass by value* ?
 
 When an object is passed by value, this means that a copy of the object is passed. Thus, even if changes are made to that object, it doesn’t affect the original value. +
 When an object is passed by reference, this means that the actual object is not passed, rather a reference of the object is passed. Thus, any changes made by the external method, are also reflected in all places.
@@ -399,39 +402,35 @@ When an object is passed by reference, this means that the actual object is not 
 This is a very confusing question, we know that object variables contain reference to the Objects in heap space. When we invoke any method, a copy of these variables is passed and gets stored in the stack memory of the method. We can test any language whether it’s pass by reference or pass by value through a simple generic swap method, to learn more read http://www.journaldev.com/3884/java-is-pass-by-value-and-not-pass-by-reference[Java is Pass by Value and Not Pass by Reference].
 
 
-=== What is *type casting*?  
+=== *Type casting*?  
 
 Type casting means treating a variable of one type as though it is another type.  
 
-=== What is the difference between the *>> and >>>* operators?  
+
+=== What is the difference between the *``>>`` and ``>>>``* operators?  
 
 The `>>` operator carries the sign bit when shifting right. +
 The `>>>` zero-fills bits that have been shifted out.  
 
 
-=== What is finally and finalize in java?
+=== `finally` and ``finalize``?
 
-finally block is used with try-catch to put the code that you want to get executed always, even if any exception is thrown by the try-catch block. finally block is mostly used to release resources created in the try block.
+`finally` block is used with try-catch to put the code that you want to get executed always, even if any exception is thrown by the try-catch block. finally block is mostly used to release resources created in the try block.
 
-finalize() is a special method in Object class that we can override in our classes. This method get’s called by garbage collector when the object is getting garbage collected. This method is usually overridden to release system resources when object is garbage collected.
-
-
-
-=== Which number is denoted by *leading zero* in java?
-
-Octal Numbers are denoted by leading zero in java, example: 06  
+`finalize()` is a special method in `Object` class that we can override in our classes. This method get’s called by garbage collector when the object is getting garbage collected. This method is usually overridden to release system resources when object is garbage collected.
 
 
-=== If you’re overriding the method equals() of an object, which other method you might also consider?
 
-hashCode()
+=== If you’re overriding the method `equals()` of an object, which other method you might also consider?
+
+`hashCode()`
 
 
-=== What are the differences between == and .equals() ?
+=== Differences between `==` and `.equals` ?
 
 The `==` operator compares two objects to determine if they are the same object in memory i.e. present in the same memory location. It is possible for two String objects to have the same value, but located in different areas of memory.
 
-`==` compares references while .equals compares contents. The method public boolean equals(Object obj) is provided by the Object class and can be overridden. The default implementation returns true only if the object is compared with itself, which is equivalent to the equality operator == being used to compare aliases to the object. String, BitSet, Date, and File override the equals() method. For two String objects, value equality means that they contain the same character sequence. For the Wrapper classes, value equality means that the primitive values are equal.
+`==` compares references while `.equals` compares contents. The method `public boolean equals(Object obj)` is provided by the `Object` class and can be overridden. The default implementation returns true only if the object is compared with itself, which is equivalent to the equality operator == being used to compare aliases to the object. String, BitSet, Date, and File override the equals() method. For two String objects, value equality means that they contain the same character sequence. For the Wrapper classes, value equality means that the primitive values are equal.
 
 [source,java]
 ----
@@ -455,19 +454,17 @@ public class EqualsTest {
 
 .Output
 ----
-== comparison : true
-== comparison : true
+== comparison: true
+== comparison: true
 Using equals method : true
-false
+== comparison: false
 Using equals method : true
 ----
 
 
-=== What is implicit casting?
+=== Implicit casting?
 
 Implicit casting is the process of simply assigning one entity to another without any transformation guidance to the compiler. This type of casting is not permitted in all kinds of transformations and may not work for all scenarios.
-
-**Example**
 
 [source,java]
 ----
@@ -476,7 +473,7 @@ long j = i; //Implicit casting
 ----
 
 
-=== Q. What is explicit casting?
+=== Explicit casting?
 
 Explicit casting in the process in which the complier are specifically informed to about transforming the object.
 
@@ -493,13 +490,11 @@ Explicit casting in the process in which the complier are specifically informed 
 === Define class?
 
 A class is a blue print from which individual objects are created. A class can contain fields and methods to describe the behavior of an object.  
-What kind of variables a class can consist of?  
-A class consist of Local variable, instance variables and class variables.  
 
 
 === What do you mean by **Constructor**?  
 
-Constructor gets invoked when a new object is created.Every class has a constructor.If we do not explicitly write a constructor for a class the java compiler builds a default constructor for that class.  
+Constructor gets invoked when a new object is created. Every class has a constructor. If we do not explicitly write a constructor for a class the java compiler builds a default constructor for that class.  
 
 
 === What is inner class in java?
@@ -579,6 +574,9 @@ Interfaces don’t implement another interface, they extend it. Since interfaces
 _Object_ is a runtime entity and it’s state is stored in fields and behavior is shown via methods. Methods operate on an object's internal state and serve as the primary mechanism for object-to-object communication.  
 
 
+=== What kind of variables a class can consist of?  
+
+A class consist of Local variable, instance variables and class variables.  
 
 === What is a Local Variable?  
 
@@ -597,10 +595,7 @@ These are variables declared with in a class, outside any method, with the stati
 
 === What is Singleton class?  
 
-Singleton class control object creation, limiting the number to one but allowing the flexibility to create more objects if the situation changes.  
-
-
-
+Singleton class control object creation, limiting the number to one but allowing the flexibility to create more objects if the situation changes. 
 
 
 === Explain the usage of this() with constructors? 
@@ -627,7 +622,6 @@ Final classes are created so the methods implemented by that class cannot be ove
 === What are Wrapper classes?  
 
 These are classes that allow primitive types to be accessed as objects. Example: Integer, Character, Double, Boolean etc.  
-The Frame class extends Window to define a main application window that can have a menu bar.  
 
 Java wrapper classes are the Object representation of eight primitive types in java. All the wrapper classes in java are immutable and final. Java 5 autoboxing and unboxing allows easy conversion between primitive types and their corresponding wrapper classes.
 
@@ -642,7 +636,7 @@ Read more at http://www.journaldev.com/1002/java-wrapper-classes-tutorial-with-e
 *   The class itself should be declared final in order to prevent subclasses to violate the principle of immutability.
 *   If fields are not of a primitive type but a reference to another object:
  ** There should not be a getter method that exposes the reference directly to the caller.
-    **  Don’t change the referenced objects (or at least changing these references is not visisble to clients of the object).
+ **  Don’t change the referenced objects (or at least changing these references is not visisble to clients of the object).
 
 
 === Which class should you use to obtain design information about an object?  
@@ -743,10 +737,6 @@ A marker interface is an empty interface without any method but used to force so
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-== Other1
-
-
-
 
 == Other
 
@@ -802,37 +792,6 @@ This is Web Archive File and used to store XML, java classes, and JavaServer pag
 The argument String indicates the argument type which is given at the command line and arg is an array for string given during command line.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-== Java 8
-
-=== What are the important *features* of *Java 8* release?
-
-Java 8 has been released in March 2014, so it’s one of the hot topic in java interview questions. If you answer this question clearly, it will show that you like to keep yourself up-to-date with the latest technologies.
-
-Java 8 has been one of the biggest release after Java 5 annotations and generics. Some of the important features of Java 8 are:
-
-1.  http://www.journaldev.com/2752/java-8-interface-changes-static-methods-default-methods-functional-interfaces[Interface changes with default and static methods]
-2.  http://www.journaldev.com/2763/java-8-lambda-expressions-and-functional-interfaces-example-tutorial[Functional interfaces and Lambda Expressions]
-3.  http://www.journaldev.com/2774/java-8-stream-api-example-tutorial[Java Stream API for collection classes]
-4.  http://www.journaldev.com/2800/java-8-date-time-api-example-tutorial-localdate-instant-localdatetime-parse-and-format[Java Date Time API]
-I strongly recommend to go through above links to get proper understanding of each one of them, also read http://www.journaldev.com/2389/java-8-features-for-developers-lambdas-functional-interface-stream-and-time-api[Java 8 Features].
 
 
 
