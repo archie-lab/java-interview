@@ -225,7 +225,15 @@ Collections provide the method ``parallelStream()`` to create a stream that is p
 The thread pool used for parallel stream operations can be accessed by ``ForkJoinPool.commonPool()``. This way we can query its level of parallelism with ``commonPool.getParallelism()``. The level cannot be changed at runtime but it can be configured by providing the following JVM parameter: ``-Djava.util.concurrent.ForkJoinPool.common.parallelism=5``.
 
 
+=== What are concurrent Collection Classes?
 
+Java 1.5 Concurrent package (``java.util.concurrent``) contains thread-safe collection classes that allow collections to be modified while iterating. By design Iterator implementation in ``java.util`` packages are fail-fast and throws ConcurrentModificationException. But Iterator implementation in``java.util.concurrent`` packages are fail-safe and we can modify the collection while iterating. Some of these classes are ``CopyOnWriteArrayList``, ``ConcurrentHashMap``, ``CopyOnWriteArraySet``.
+
+Read these posts to learn about them in more detail.
+
+*   http://www.journaldev.com/378/how-to-avoid-concurrentmodificationexception-when-using-an-iterator[Avoid ConcurrentModificationException]
+*   http://www.journaldev.com/1289/java-arraylist-vs-copyonwritearraylist-and-exploring-iterator[CopyOnWriteArrayList Example]
+*   http://www.journaldev.com/122/hashmap-vs-concurrenthashmap-%e2%80%93-example-and-exploring-iterator[HashMap vs ConcurrentHashMap]
 
 
 

@@ -7,26 +7,29 @@ toc::[]
 
 == SQL
 
-=== What are the different types of locking in JDBC?
+=== Different types of *locking* in JDBC?
 
 On a broad level, there are two types of locking mechanism to prevent data corruption because of more than one user working with the same data.
 
-1.  Optimistic Locking – Locking the record only when update is taking place
-2.  Pessimistic Locking – Locking the record from the select to read, update and commit phase.
+1.  *Optimistic Locking* – Locking the record only when update is taking place
+2.  *Pessimistic Locking* – Locking the record from the select to read, update and commit phase.
+
 Apart from that some DBMS systems provide locking mechanism to lock single row, table or database.
 
 === What do you understand by DDL and DML statements?
 
-Data Definition Language (DDL) statements are used to define the database schema. Create, Alter, Drop, Truncate, Rename statements comes under DDL statements and usually they don’t return any result.
+*Data Definition Language* (**DDL**) statements are used to define the database schema. +
+``Create``, ``Alter``, ``Drop``, ``Truncate``, `Rename` statements comes under DDL statements and usually they don’t return any result.
 
-Data Manipulation Language (DML) statements are used to manipulate data in the database schema. Select, Insert, Update, Delete, Call etc are example of DML statements.
+*Data Manipulation Language* (**DML**) statements are used to manipulate data in the database schema. +
+``Select``, ``Insert``, ``Update``, ``Delete``, `Call` etc are example of DML statements.
 
 
-=== What is phantom read and which isolation level prevents it?
+=== What is *phantom read* and which isolation level prevents it?
 
-A phantom read is the situation where a transaction executes a query multiple times and get different data. Suppose a transaction is executing a query to get data based on a condition and then another transaction inserts a row that matches the condition. Now when same transaction will execute the query again, a new row will be part of the result set. This new row is referred as Phantom Row and this situation is termed as Phantom Read.
+A phantom read is the situation where a transaction executes a query multiple times and as result - get different data. Suppose a transaction is executing a query to get data based on a condition and then another transaction inserts a row that matches the condition. Now when same transaction will execute the query again, a new row will be part of the result set. This new row is referred as Phantom Row and this situation is termed as Phantom Read.
 
-Phantom read can be prevented only with TRANSACTION_SERIALIZABLE isolation level.
+Phantom read can be prevented only with *TRANSACTION_SERIALIZABLE* isolation level.
 
 
 === What is SQL Warning? How to retrieve SQL warnings in the JDBC program?
@@ -58,9 +61,9 @@ Similarly hibernate configurations are flexible and can be done from XML configu
 
 === What is Java Persistence API (JPA)?
 
-Java Persistence API (JPA) provides specification for managing the relational data in applications. Current JPA version 2.1 was started in July 2011 as JSR 338. JPA 2.1 was approved as final on 22 May 2013.
+*Java Persistence API* (JPA) provides specification for managing the relational data in applications. Current JPA version 2.1 was started in July 2011 as JSR 338. JPA 2.1 was approved as final on 22 May 2013.
 
-JPA specifications is defined with annotations in javax.persistence package. Using JPA annotation helps us in writing implementation independent code.
+JPA specifications is defined with annotations in `javax.persistence` package. Using JPA annotation helps us in writing implementation independent code.
 
 
 === What are the important benefits of using Hibernate Framework?
@@ -115,15 +118,15 @@ Some of the design patterns used in Hibernate Framework are:
 
 === What is Hibernate SessionFactory and how to configure it?
 
-SessionFactory is the factory class used to get the Session objects. SessionFactory is responsible to read the hibernate configuration parameters and connect to the database and provide Session objects. Usually an application has a single SessionFactory instance and threads servicing client requests obtain Session instances from this factory.
+`SessionFactory` is the factory class used to get the `Session` objects. SessionFactory is responsible to read the hibernate configuration parameters and connect to the database and provide Session objects. Usually an application has a single `SessionFactory` instance and threads servicing client requests obtain Session instances from this factory.
 
-The internal state of a SessionFactory is immutable. Once it is created this internal state is set. This internal state includes all of the metadata about Object/Relational Mapping.
+The internal state of a `SessionFactory` is immutable. Once it is created this internal state is set. This internal state includes all of the metadata about Object/Relational Mapping.
 
-SessionFactory also provide methods to get the Class metadata and Statistics instance to get the stats of query executions, second level cache details etc.
+`SessionFactory` also provide methods to get the Class metadata and Statistics instance to get the stats of query executions, second level cache details etc.
 
 === Hibernate SessionFactory is thread safe?
 
-Internal state of SessionFactory is immutable, so it’s thread safe. Multiple threads can access it simultaneously to get Session instances.
+Internal state of `SessionFactory` is immutable, so it’s thread safe. Multiple threads can access it simultaneously to get Session instances.
 
 === What is Hibernate Session and how to get it?
 
@@ -137,24 +140,24 @@ Hibernate Session object is not thread safe, every thread should get it’s own 
 
 === What is difference between openSession and getCurrentSession?
 
-Hibernate SessionFactory getCurrentSession() method returns the session bound to the context. But for this to work, we need to configure it in hibernate configuration file. Since this session object belongs to the hibernate context, we don’t need to close it. Once the session factory is closed, this session object gets closed.
+Hibernate SessionFactory `getCurrentSession()` method returns the session bound to the context. But for this to work, we need to configure it in hibernate configuration file. Since this session object belongs to the hibernate context, we don’t need to close it. Once the session factory is closed, this session object gets closed.
 
 ```xml
 <property name="hibernate.current_session_context_class">thread</property>
 ```
 
-Hibernate SessionFactory openSession() method always opens a new session. We should close this session object once we are done with all the database operations. We should open a new session for each request in multi-threaded environment.
+Hibernate SessionFactory `openSession()` method always opens a new session. We should close this session object once we are done with all the database operations. We should open a new session for each request in multi-threaded environment.
 
-There is another method openStatelessSession() that returns stateless session, for more details with examples please read http://www.journaldev.com/3522/hibernate-sessionfactory-opensession-vs-getcurrentsession-vs-openstatelesssession[Hibernate openSession vs getCurrentSession].
+There is another method `openStatelessSession()` that returns stateless session, for more details with examples please read http://www.journaldev.com/3522/hibernate-sessionfactory-opensession-vs-getcurrentsession-vs-openstatelesssession[Hibernate openSession vs getCurrentSession].
 
 
 === What is difference between Hibernate Session get() and load() method?
 
-Hibernate session comes with different methods to load data from database. get and load are most used methods, at first look they seems similar but there are some differences between them.
+Hibernate session comes with different methods to load data from database. `get` and `load` are most used methods, at first look they seems similar but there are some differences between them.
 
-1.  get() loads the data as soon as it’s called whereas load() returns a proxy object and loads data only when it’s actually required, so load() is better because it support lazy loading.
-2.  Since load() throws exception when data is not found, we should use it only when we know data exists.
-3.  We should use get() when we want to make sure data exists in the database.
+1.  `get()` loads the data as soon as it’s called whereas `load()` returns a proxy object and loads data only when it’s actually required, so `load()` is better because it support lazy loading.
+2.  Since `load()` throws exception when data is not found, we should use it only when we know data exists.
+3.  We should use `get()` when we want to make sure data exists in the database.
 For clarification regarding the differences, please read http://www.journaldev.com/3472/hibernate-session-get-vs-load-difference-with-examples[Hibernate get vs load].
 
 

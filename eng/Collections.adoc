@@ -144,9 +144,9 @@ It can be implemented on top of current Iterator interface but since it’s use 
 
 === Why there are no concrete implementations of Iterator interface?
 
-Iterator interface declare methods for iterating a collection but it’s implementation is responsibility of the Collection implementation classes. Every collection class that returns an iterator for traversing has it’s own Iterator implementation nested class.  
+`Iterator` interface declare methods for iterating a collection but it’s implementation is responsibility of the Collection implementation classes. Every collection class that returns an iterator for traversing has it’s own Iterator implementation nested class.  
 
-This allows collection classes to chose whether iterator is fail-fast or fail-safe. For example ArrayList iterator is fail-fast whereas CopyOnWriteArrayList iterator is fail-safe.
+This allows collection classes to chose whether iterator is fail-fast or fail-safe. For example ArrayList iterator is fail-fast whereas `CopyOnWriteArrayList` iterator is fail-safe.
 
 
 === What are different ways to iterate over a list?
@@ -180,23 +180,12 @@ Iterator fail-fast property checks for any modification in the structure of the 
 
 Iterator fail-safe property work with the clone of underlying collection, hence it’s not affected by any modification in the collection. By design, all the collection classes in ``java.util`` package are fail-fast whereas collection classes in ``java.util.concurrent`` are fail-safe.  
 
-Fail-fast iterators throw ConcurrentModificationException whereas fail-safe iterator never throws ConcurrentModificationException.  
+Fail-fast iterators throw `ConcurrentModificationException` whereas fail-safe iterator never throws this exception.  
 
 Check this post for http://www.journaldev.com/1289/java-arraylist-vs-copyonwritearraylist-and-exploring-iterator[CopyOnWriteArrayList Example].
 
 
-
-
-=== **What is difference between fail-fast and fail-safe ?**
-
-The ``http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html[Iterator's]`` fail-safe property works with the clone of the underlying collection and thus, it is not affected by any modification in the collection. All the collection classes in java.util package are fail-fast, while the collection classes in java.util.concurrent are fail-safe. Fail-fast iterators throw ahttp://examples.javacodegeeks.com/java-basics/exceptions/java-util-concurrentmodificationexception-how-to-handle-concurrent-modification-exception/[``ConcurrentModificationException``], while fail-safe iterator never throws such an exception.
-
-
-=== **What is the importance of hashCode() and equals() methods ?**
-In Java, a ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` uses the ``http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#hashCode%28%29[hashCode]`` and``http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#equals%28java.lang.Object%29[equals]`` methods to determine the index of the key-value pair and to detect duplicates. More specifically, the ``http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#hashCode%28%29[hashCode]``method is used in order to determine where the specified key will be stored. Since different keys may produce the same hash value, the ``http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#equals%28java.lang.Object%29[equals]`` method is used, in order to determine whether the specified key actually exists in the collection or not. Therefore, the implementation of both methods is crucial to the accuracy and efficiency of the ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]``.
-
-
-=== What is the importance of hashCode() and equals() methods?
+=== What is the importance of hashCode() and equals() methods ?
 
 HashMap uses Key object hashCode() and equals() method to determine the index to put the key-value pair. These methods are also used when we try to get value from HashMap. If these methods are not implemented correctly, two different Key’s might produce same hashCode() and equals() output and in that case rather than storing it at different location, HashMap will consider them same and overwrite them.
 
@@ -207,35 +196,17 @@ Similarly all the collection classes that doesn’t store duplicate data use has
 
 
 
-
-
 === **What is Java Priority Queue ?**
 
 The ``http://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html[PriorityQueue]`` is an unbounded queue, based on a priority heap and its elements are ordered in their natural order. At the time of its creation, we can provide a Comparator that is responsible for ordering the elements of the ``http://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html[PriorityQueue]``. A ``http://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html[PriorityQueue]`` doesn’t allow http://examples.javacodegeeks.com/java-basics/exceptions/java-lang-nullpointerexception-how-to-handle-null-pointer-exception/[null values], those objects that doesn’t provide natural ordering, or those objects that don’t have any comparator associated with them. Finally, the Java ``http://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html[PriorityQueue]`` is not thread-safe and it requires O(log(n)) time for its enqueing and dequeing operations.
 
 
-=== What is Java Priority Queue?
-
-PriorityQueue is an unbounded queue based on a priority heap and the elements are ordered in their natural order or we can provide http://www.journaldev.com/780/java-comparable-and-comparator-example-to-sort-objects[Comparator] for ordering at the time of creation. PriorityQueue doesn’t allow null values and we can’t add any object that doesn’t provide natural ordering or we don’t have any comparator for them for ordering. Java PriorityQueue is not http://www.journaldev.com/1061/java-synchronization-and-thread-safety-tutorial-with-examples[thread-safe] and provided O(log(n)) time for enqueing and dequeing operations. Check this post for http://www.journaldev.com/1642/java-priority-queue-priorityqueue-example[java priority queue example].
 
 
-=== **What do you know about the big-O notation and can you give some examples with respect to different data structures ?**
-
-The http://www.javacodegeeks.com/2011/04/simple-big-o-notation-post.html[Big-O notation] simply describes how well an algorithm scales or performs in the worst case scenario as the number of elements in a data structure increases. The Big-O notation can also be used to describe other behavior such as memory consumption. Since the collection classes are actually data structures, we usually use the Big-O notation to chose the best implementation to use, based on time, memory and performance. Big-O notation can give a good indication about performance for large amounts of data.
 
 
-=== What is Big-O notation? Give some examples?
-
-The Big-O notation describes the performance of an algorithm in terms of number of elements in a data structure. Since Collection classes are actually data structures, we usually tend to use Big-O notation to chose the collection implementation to use based on time, memory and performance.
-
-Example 1: ArrayList ``get(index i)`` is a constant-time operation and doesn’t depend on the number of elements in the list. So it’s performance in Big-O notation is O(1).  
-
-Example 2: A linear search on array or list performance is O(n) because we need to search through entire list of elements to find the element.
 
 
-=== **What is the tradeoff between using an unordered array versus an ordered array ?**
-
-The major advantage of an ordered array is that the search times have time complexity of O(log n), compared to that of an unordered array, which is O (n). The disadvantage of an ordered array is that the insertion operation has a time complexity of O(n), because the elements with higher values must be moved to make room for the new element. Instead, the insertion operation for an unordered array takes constant time of O(1).
 
 
 === **What are some of the best practices relating to the Java Collection framework ?**
@@ -248,14 +219,6 @@ The major advantage of an ordered array is that the search times have time compl
 *   Return zero-length collections or arrays as opposed to returning a null in case the underlying collection is actually empty.
 
 
-=== What are best practices related to Java Collections Framework?
-
-*   Chosing the right type of collection based on the need, for example if size is fixed, we might want to use Array over ArrayList. If we have to iterate over the Map in order of insertion, we need to use TreeMap. If we don’t want duplicates, we should use Set.
-*   Some collection classes allows to specify the initial capacity, so if we have an estimate of number of elements we will store, we can use it to avoid rehashing or resizing.
-*   Write program in terms of interfaces not implementations, it allows us to change the implementation easily at later point of time.
-*   Always use Generics for type-safety and avoid ClassCastException at runtime.
-*   Use immutable classes provided by JDK as key in Map to avoid implementation of hashCode() and equals() for our custom class.
-*   Use Collections utility class as much as possible for algorithms or to get read-only, synchronized or empty collections rather than writing own implementation. It will enhance code-reuse with greater stability and low maintainability.
 
 
 === **What’s the difference between Enumeration and Iterator interfaces ?**
@@ -299,11 +262,6 @@ Map interface provides three collection views:
 3.  **Set<Map.Entry<K, V>> entrySet()**: Returns a Set view of the mappings contained in this map. The set is backed by the map, so changes to the map are reflected in the set, and vice-versa. If the map is modified while an iteration over the set is in progress (except through the iterator’s own remove operation, or through the setValue operation on a map entry returned by the iterator) the results of the iteration are undefined. The set supports element removal, which removes the corresponding mapping from the map, via the Iterator.remove, Set.remove, removeAll, retainAll and clear operations. It does not support the add or addAll operations.
 
 
-=== Which collection classes provide random access of it’s elements?
-
-ArrayList, HashMap, TreeMap, Hashtable classes provide random access to it’s elements. Downloadhttp://www.journaldev.com/wp-content/uploads/2013/01/java-collections-framework.pdf[java collections pdf] for more information.
-
-
 === Which collection classes are thread-safe?
 
 Vector, Hashtable, Properties and Stack are synchronized classes, so they are thread-safe and can be used in multi-threaded environment. Java 1.5 Concurrent API included some collection classes that allows modification of collection while iteration because they work on the clone of the collection, so they are safe to use in multi-threaded environment.
@@ -314,15 +272,7 @@ Vector, Hashtable, Properties and Stack are synchronized classes, so they are th
 The utility class Collections provides the methods ``synchronizedCollection(Collection)``, ``synchronizedList(List)`` and``synchronizedMap(Map)`` that return a thread-safe collection/list/map that is backed by the given instance.
 
 
-=== What are concurrent Collection Classes?
 
-Java 1.5 Concurrent package (``java.util.concurrent``) contains thread-safe collection classes that allow collections to be modified while iterating. By design Iterator implementation in ``java.util`` packages are fail-fast and throws ConcurrentModificationException. But Iterator implementation in``java.util.concurrent`` packages are fail-safe and we can modify the collection while iterating. Some of these classes are ``CopyOnWriteArrayList``, ``ConcurrentHashMap``, ``CopyOnWriteArraySet``.
-
-Read these posts to learn about them in more detail.
-
-*   http://www.journaldev.com/378/how-to-avoid-concurrentmodificationexception-when-using-an-iterator[Avoid ConcurrentModificationException]
-*   http://www.journaldev.com/1289/java-arraylist-vs-copyonwritearraylist-and-exploring-iterator[CopyOnWriteArrayList Example]
-*   http://www.journaldev.com/122/hashmap-vs-concurrenthashmap-%e2%80%93-example-and-exploring-iterator[HashMap vs ConcurrentHashMap]
 
 
 === What is BlockingQueue?
@@ -357,9 +307,6 @@ This class contains methods for collection framework algorithms, such as binary 
 We can create a read-only collection using ``Collections.unmodifiableCollection(Collection c)`` method before passing it as argument, this will make sure that any operation to change the collection will throw ``UnsupportedOperationException``.
 
 
-=== How can we create a synchronized collection from given collection?
-
-We can use ``Collections.synchronizedCollection(Collection c)`` to get a synchronized (thread-safe) collection backed by the specified collection.
 
 
 === What are common algorithms implemented in Collections Framework?
@@ -401,11 +348,18 @@ Arrays are covariant by nature i.e S[] is a subtype of T[] whenever S is a subty
 
 
 
+=== What do you know about the big-O notation and can you give some examples with respect to different data structures ?
+
+The http://www.javacodegeeks.com/2011/04/simple-big-o-notation-post.html[Big-O notation] simply describes how well an algorithm scales or performs in the worst case scenario as the number of elements in a data structure increases. The Big-O notation can also be used to describe other behavior such as memory consumption. Since the collection classes are actually data structures, we usually use the Big-O notation to chose the best implementation to use, based on time, memory and performance. Big-O notation can give a good indication about performance for large amounts of data.
+
+Example 1: ArrayList ``get(index i)`` is a constant-time operation and doesn’t depend on the number of elements in the list. So it’s performance in Big-O notation is O(1).  
+
+Example 2: A linear search on array or list performance is O(n) because we need to search through entire list of elements to find the element.
 
 
+=== **What is the tradeoff between using an unordered array versus an ordered array ?**
 
-
-
+The major advantage of an ordered array is that the search times have time complexity of O(log n), compared to that of an unordered array, which is O (n). The disadvantage of an ordered array is that the insertion operation has a time complexity of O(n), because the elements with higher values must be moved to make room for the new element. Instead, the insertion operation for an unordered array takes constant time of O(1).
 
 
 
@@ -430,16 +384,8 @@ Both the ``http://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html[Arr
 *   A ``http://docs.oracle.com/javase/7/docs/api/java/util/LinkedList.html[LinkedList]`` consumes more memory than an ``http://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html[ArrayList]``, because every node in a ``http://docs.oracle.com/javase/7/docs/api/java/util/LinkedList.html[LinkedList]`` stores two references, one for its previous element and one for its next element.
 
 
-=== What is difference between ArrayList and LinkedList?
+=== What is difference between Array and ArrayList ? When will you use Array over ArrayList ?
 
-ArrayList and LinkedList both implement List interface but there are some differences between them.
-
-1.  ArrayList is an index based data structure backed by Array, so it provides random access to it’s elements with performance as O(1) but LinkedList stores data as list of nodes where every node is linked to it’s previous and next node. So even though there is a method to get the element using index, internally it traverse from start to reach at the index node and then return the element, so performance is O(n) that is slower than ArrayList.
-2.  Insertion, addition or removal of an element is faster in LinkedList compared to ArrayList because there is no concept of resizing array or updating index when element is added in middle.
-3.  LinkedList consumes more memory than ArrayList because every node in LinkedList stores reference of previous and next elements.
-
-
-=== **What is difference between Array and ArrayList ? When will you use Array over ArrayList ?**
 The ``http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Array.html[Array]``and ``http://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html[ArrayList]`` classes differ on the following features:
 
 *   ``http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html[Arrays]`` can contain primitive or objects, while an ``http://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html[ArrayList]`` can contain only objects.
@@ -508,39 +454,7 @@ If Map extends Collection interface, then where are the elements? Map contains k
 === **How HashMap works in Java ?**
 A http://www.javacodegeeks.com/2014/03/how-hashmap-works-in-java.html[HashMap in Java stores key-value pairs]. The ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` requires a hash function and uses ``http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#hashCode%28%29[hashCode]`` and equals methods, in order to put and retrieve elements to and from the collection respectively. When the put method is invoked, the ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` calculates the hash value of the key and stores the pair in the appropriate index inside the collection. If the key exists, its value is updated with the new value. Some important characteristics of a``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` are its capacity, its load factor and the threshold resizing.
 
-
-=== **What differences exist between HashMap and Hashtable ?**
-Both the ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` and ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` classes implement the Map interface and thus, have very similar characteristics. However, they differ in the following features:
-
-*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` allows the existence of null keys and values, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` doesn’t allow neither null keys, nor null values.
-*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` is synchronized, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is not. Thus, ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is preferred in single-threaded environments, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` is suitable for multi-threaded environments.
-*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` provides its set of keys and a Java application can iterate over them. Thus, a ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is fail-fast. On the other hand, a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` provides an ``http://docs.oracle.com/javase/7/docs/api/java/util/Enumeration.html[Enumeration]`` of its keys.
-*   The ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` class is considered to be a legacy class.
-
-
-=== What is difference between HashMap and Hashtable?
-
-HashMap and Hashtable both implements Map interface and looks similar, however there are following difference between HashMap and Hashtable.
-
-1.  HashMap allows null key and values whereas Hashtable doesn’t allow null key and values.
-2.  Hashtable is synchronized but HashMap is not synchronized. So HashMap is better for single threaded environment, Hashtable is suitable for multi-threaded environment.
-3.  ``LinkedHashMap`` was introduced in Java 1.4 as a subclass of HashMap, so incase you want iteration order, you can easily switch from HashMap to LinkedHashMap but that is not the case with Hashtable whose iteration order is unpredictable.
-4.  HashMap provides Set of keys to iterate and hence it’s fail-fast but Hashtable provides Enumeration of keys that doesn’t support this feature.
-5.  Hashtable is considered to be legacy class and if you are looking for modifications of Map while iterating, you should use ConcurrentHashMap.
-
-
-=== What is the difference between ``HashMap`` and ``Hashtable`` particularly with regard to thread-safety?
-
-The methods of ``Hashtable`` are all synchronized. This is not the case for the ``HashMap`` implementation. Hence ``Hashtable`` is thread-safe whereas ``HashMap`` is not thread-safe. For single-threaded applications it is therefore more efficient to use the “newer” ``HashMap`` implementation.
-
-
-
-=== How to decide between HashMap and TreeMap?
-
-For inserting, deleting, and locating elements in a Map, the HashMap offers the best alternative. If, however, you need to traverse the keys in a sorted order, then TreeMap is your better alternative. Depending upon the size of your collection, it may be faster to add elements to a HashMap, then convert the map to a TreeMap for sorted key traversal.
-
-
-=== How HashMap works in Java?
+---
 
 HashMap stores key-value pair in ``Map.Entry`` static nested class implementation. HashMap works on hashing algorithm and uses hashCode() and equals() method in ``put`` and ``get`` methods.
 
@@ -553,6 +467,25 @@ image::../images/java-hashmap-entry-impl.png[]
 The other important things to know about HashMap are capacity, load factor, threshold resizing. HashMap initial default capacity is **16** and load factor is 0.75. Threshold is capacity multiplied by load factor and whenever we try to add an entry, if map size is greater than threshold, HashMap rehashes the contents of map into a new array with a larger capacity. The capacity is always power of 2, so if you know that you need to store a large number of key-value pairs, for example in caching data from database, it’s good idea to initialize the HashMap with correct capacity and load factor.
 
 
+
+
+=== **What differences exist between HashMap and Hashtable ?**
+Both the ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` and ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` classes implement the Map interface and thus, have very similar characteristics. However, they differ in the following features:
+
+*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` allows the existence of null keys and values, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` doesn’t allow neither null keys, nor null values.
+*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` is synchronized, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is not. Thus, ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is preferred in single-threaded environments, while a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` is suitable for multi-threaded environments.
+*   A ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` provides its set of keys and a Java application can iterate over them. Thus, a ``http://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html[HashMap]`` is fail-fast. On the other hand, a ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` provides an ``http://docs.oracle.com/javase/7/docs/api/java/util/Enumeration.html[Enumeration]`` of its keys.
+*   The ``http://docs.oracle.com/javase/7/docs/api/java/util/Hashtable.html[Hashtable]`` class is considered to be a legacy class.
+
+
+
+
+=== How to decide between HashMap and TreeMap?
+
+For inserting, deleting, and locating elements in a Map, the HashMap offers the best alternative. If, however, you need to traverse the keys in a sorted order, then TreeMap is your better alternative. Depending upon the size of your collection, it may be faster to add elements to a HashMap, then convert the map to a TreeMap for sorted key traversal.
+
+
+
 === Can we use any class as Map key?
 
 We can use any class as Map Key, however following points should be considered before using them.
@@ -562,7 +495,7 @@ We can use any class as Map Key, however following points should be considered b
 *   If a class field is not used in equals(), you should not use it in hashCode() method.
 *   Best practice for user defined key class is to make it immutable, so that hashCode() value can be cached for fast performance. Also immutable classes make sure that hashCode() and equals() will not change in future that will solve any issue with mutability.
 
-    For example, let’s say I have a class ``MyKey`` that I am using for HashMap key.
+For example, let’s say I have a class `MyKey` that I am using for HashMap key.
 
 [source,java]
 ----
